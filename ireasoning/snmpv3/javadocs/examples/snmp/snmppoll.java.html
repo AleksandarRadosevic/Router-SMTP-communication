@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>snmppoll (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002 iReasoning Networks. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Networks as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Networks.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/package-summary.html">com.ireasoning.protocol.*</A>;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="24"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">com.ireasoning.util.ParseArguments</A>;
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="FormalComment">/**
+<A NAME="27"></A> * This class demonstrates polling agent (using SNMP GET_NEXT request) periodically.
+<A NAME="28"></A> * &lt;pre&gt;
+<A NAME="29"></A> * Example: 
+<A NAME="30"></A> * java snmppoll -i 5 localhost .1.3.6.1.2.1.1.1.0 .1.3.6.1.2.1.1.3
+<A NAME="31"></A> * &lt;/pre&gt;
+<A NAME="32"></A> */</FONT>
+<A NAME="33"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> snmppoll <FONT ID="Extends">extends</FONT> <A HREF="snmp.java.html">snmp</A>
+<A NAME="34"></A>    <FONT ID="Implements">implements</FONT> <A HREF="../..//com/ireasoning/protocol/Listener.html">Listener</A>
+<A NAME="35"></A>{
+<A NAME="36"></A>    <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> _interval = <FONT ID="IntegerLiteral">3</FONT>;<FONT ID="SingleLineComment">//3 seconds;
+<A NAME="37"></A></FONT>    <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPoller.html">SnmpPoller</A> _poller;
+<A NAME="38"></A>    
+<A NAME="39"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)  
+<A NAME="40"></A>    {
+<A NAME="41"></A>        <A HREF="snmppoll.java.html">snmppoll</A> s = <FONT ID="New">new</FONT> <A HREF="snmppoll.java.html">snmppoll</A>();
+<A NAME="42"></A>        s.parseOptions(args, <FONT ID="StringLiteral">"snmppoll"</FONT>);
+<A NAME="43"></A>        <FONT ID="SingleLineComment">// s.printOptions();
+<A NAME="44"></A></FONT>
+<A NAME="45"></A>        s.doIt();
+<A NAME="46"></A>    }
+<A NAME="47"></A>
+<A NAME="48"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> handleMsg(Object sender, <A HREF="../..//com/ireasoning/protocol/Msg.html">Msg</A> msg)
+<A NAME="49"></A>    {
+<A NAME="50"></A>        <FONT ID="If">if</FONT>(msg.getType() != Msg.ERROR_TYPE)
+<A NAME="51"></A>        {
+<A NAME="52"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> pdu = (<A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A>) msg;
+<A NAME="53"></A>            print(pdu);
+<A NAME="54"></A>        }
+<A NAME="55"></A>        <FONT ID="Else">else</FONT>
+<A NAME="56"></A>        {
+<A NAME="57"></A>            <A HREF="../..//com/ireasoning/protocol/ErrorMsg.html">ErrorMsg</A> error = (<A HREF="../..//com/ireasoning/protocol/ErrorMsg.html">ErrorMsg</A>)msg;
+<A NAME="58"></A>            Exception e = error.getException();
+<A NAME="59"></A>            System.out.println( e );
+<A NAME="60"></A>        }
+<A NAME="61"></A>    }
+<A NAME="62"></A>
+<A NAME="63"></A>    <FONT ID="Void">void</FONT> doIt()
+<A NAME="64"></A>    {
+<A NAME="65"></A>        <FONT ID="Try">try</FONT>
+<A NAME="66"></A>        {
+<A NAME="67"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(_host, _port, _community,
+<A NAME="68"></A>                    _community, _version);
+<A NAME="69"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="70"></A>            {
+<A NAME="71"></A>                session.setV3Params(_user, _authProtocol, _authPassword, _privProtocol, _privPassword, _context, <FONT ID="Null">null</FONT>);
+<A NAME="72"></A>            }
+<A NAME="73"></A>
+<A NAME="74"></A>            _poller = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPoller.html">SnmpPoller</A>(session);
+<A NAME="75"></A>            _poller.addListener(<FONT ID="This">this</FONT>);
+<A NAME="76"></A>            _poller.snmpGetNextPoll(_oids, _interval);
+<A NAME="77"></A>        }
+<A NAME="78"></A>        <FONT ID="Catch">catch</FONT>(Exception e)
+<A NAME="79"></A>        {
+<A NAME="80"></A>            System.out.println(e);
+<A NAME="81"></A>            e.printStackTrace();
+<A NAME="82"></A>        }
+<A NAME="83"></A>    }
+<A NAME="84"></A>
+<A NAME="85"></A>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="86"></A></FONT>    <FONT ID="SingleLineComment">// Parsing command line options
+<A NAME="87"></A></FONT>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="88"></A></FONT>    
+<A NAME="89"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> moreOptions()
+<A NAME="90"></A>    {
+<A NAME="91"></A>        System.out.println( <FONT ID="StringLiteral">"-i &lt;n&gt;\tpolling interval, in seconds"</FONT>);
+<A NAME="92"></A>    }
+<A NAME="93"></A>    
+<A NAME="94"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printExample(String programName)
+<A NAME="95"></A>    {
+<A NAME="96"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" -i 5 localhost .1.3.6.1.2.1.1.1.0 .1.3.6.1.2.1.1.3"</FONT>);
+<A NAME="97"></A>    }
+<A NAME="98"></A>
+<A NAME="99"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> parseOptions(String[] args, String program)
+<A NAME="100"></A>    {
+<A NAME="101"></A>        <FONT ID="Super">super</FONT>.parseOptions(args, program);
+<A NAME="102"></A>        String in = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'i'</FONT>);
+<A NAME="103"></A>        <FONT ID="If">if</FONT>( in == <FONT ID="Null">null</FONT>)
+<A NAME="104"></A>        {
+<A NAME="105"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> RuntimeException(<FONT ID="StringLiteral">"Interval must be specified."</FONT>);
+<A NAME="106"></A>        }
+<A NAME="107"></A>        _interval = Integer.parseInt(in);
+<A NAME="108"></A>    }
+<A NAME="109"></A>
+<A NAME="110"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printMoreOptions()
+<A NAME="111"></A>    {
+<A NAME="112"></A>        System.out.println( <FONT ID="StringLiteral">"interval =\t\t"</FONT> + _interval);
+<A NAME="113"></A>    }
+<A NAME="114"></A>
+<A NAME="115"></A>    <FONT ID="FormalComment">/**
+<A NAME="116"></A>     * Creates a new instance of ParseArguments
+<A NAME="117"></A>     */</FONT>
+<A NAME="118"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A> newParseArgumentsInstance(String[] args)
+<A NAME="119"></A>    {
+<A NAME="120"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A>(args, <FONT ID="StringLiteral">"?ho"</FONT>, <FONT ID="StringLiteral">"utvaAXxcpmi"</FONT>);
+<A NAME="121"></A>    }
+<A NAME="122"></A>    
+<A NAME="123"></A>}<FONT ID="SingleLineComment">//end of class snmppoll
+<A NAME="124"></A></FONT>
+<A NAME="125"></A>
+<A NAME="126"></A></pre>
+</BODY>
+</HTML>

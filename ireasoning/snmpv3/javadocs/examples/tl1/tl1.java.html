@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>tl1 (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002-2003 iReasoning Inc. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Inc. as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Inc.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/util/package-summary.html">com.ireasoning.util.*</A>;
+<A NAME="24"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/package-summary.html">com.ireasoning.protocol.*</A>;
+<A NAME="25"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/tl1/package-summary.html">com.ireasoning.protocol.tl1.*</A>;
+<A NAME="26"></A><FONT ID="FormalComment">/**
+<A NAME="27"></A> * This class demonstrates some basic usage of TL1 APIs. It connects to a local
+<A NAME="28"></A> * TL1 agent at port 9000, and issues several commands to get information.
+<A NAME="29"></A> */</FONT>
+<A NAME="30"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> tl1 
+<A NAME="31"></A>{
+<A NAME="32"></A>    <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> NotificationListener <FONT ID="Extends">extends</FONT> Thread
+<A NAME="33"></A>    {
+<A NAME="34"></A>        <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> run()
+<A NAME="35"></A>        {
+<A NAME="36"></A>            <FONT ID="Try">try</FONT>
+<A NAME="37"></A>            {
+<A NAME="38"></A>                <A HREF="../..//com/ireasoning/protocol/tl1/TL1Session.html">TL1Session</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/tl1/TL1Session.html">TL1Session</A>(<FONT ID="StringLiteral">"localhost"</FONT>, <FONT ID="IntegerLiteral">9000</FONT>);
+<A NAME="39"></A>                <A HREF="../..//com/ireasoning/protocol/tl1/TL1Command.html">TL1Command</A> req = TL1Command.act_user(<FONT ID="StringLiteral">"abc"</FONT>, <FONT ID="StringLiteral">"123"</FONT>);
+<A NAME="40"></A>                session.send(req);
+<A NAME="41"></A>                <FONT ID="While">while</FONT>(<FONT ID="True">true</FONT>)
+<A NAME="42"></A>                {<FONT ID="SingleLineComment">//waiting for autonomous messages
+<A NAME="43"></A></FONT>                    <A HREF="../..//com/ireasoning/protocol/tl1/TL1NotificationMsg.html">TL1NotificationMsg</A>[] notes = session.waitForNotificationMsg();
+<A NAME="44"></A>                    <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; notes.length ; i++) 
+<A NAME="45"></A>                    {
+<A NAME="46"></A>                        System.out.println( <FONT ID="StringLiteral">"Got a new alarm:\r\n"</FONT> + notes[i]);
+<A NAME="47"></A>                    }
+<A NAME="48"></A>                }
+<A NAME="49"></A>            }
+<A NAME="50"></A>            <FONT ID="Catch">catch</FONT>(Exception e)
+<A NAME="51"></A>            {
+<A NAME="52"></A>                System.out.println( e);
+<A NAME="53"></A>                e.printStackTrace();
+<A NAME="54"></A>            }
+<A NAME="55"></A>        }
+<A NAME="56"></A>    }
+<A NAME="57"></A>
+<A NAME="58"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)  
+<A NAME="59"></A>    {
+<A NAME="60"></A>        <FONT ID="Try">try</FONT>
+<A NAME="61"></A>        {
+<A NAME="62"></A>            System.out.println( <FONT ID="StringLiteral">"login to localhost"</FONT>);
+<A NAME="63"></A>            <A HREF="../..//com/ireasoning/protocol/tl1/TL1Session.html">TL1Session</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/tl1/TL1Session.html">TL1Session</A>(<FONT ID="StringLiteral">"localhost"</FONT>, <FONT ID="IntegerLiteral">9000</FONT>);
+<A NAME="64"></A>            <FONT ID="New">new</FONT> NotificationListener().start();<FONT ID="SingleLineComment">//start a thread for listening to notification messages
+<A NAME="65"></A></FONT>            <A HREF="../..//com/ireasoning/protocol/tl1/TL1Command.html">TL1Command</A> req = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/tl1/TL1Command.html">TL1Command</A>();
+<A NAME="66"></A>
+<A NAME="67"></A>            System.out.println( <FONT ID="StringLiteral">"send login command"</FONT> );
+<A NAME="68"></A>            req = TL1Command.act_user(<FONT ID="StringLiteral">"abc"</FONT>, <FONT ID="StringLiteral">"123"</FONT>);
+<A NAME="69"></A>            session.send(req);
+<A NAME="70"></A>
+<A NAME="71"></A>            req.setCommand(<FONT ID="StringLiteral">"rtrv-inv:NodeA:SLOT-ALL:123;"</FONT>);
+<A NAME="72"></A>            print(session.send(req));
+<A NAME="73"></A>            
+<A NAME="74"></A>            req.setCommand(<FONT ID="StringLiteral">"rtrv-eqpt:NodeA:SLOT-ALL:123;"</FONT>);
+<A NAME="75"></A>            <A HREF="../..//com/ireasoning/protocol/tl1/TL1ResponseMsg.html">TL1ResponseMsg</A>  msg = (session.send(req))[<FONT ID="IntegerLiteral">0</FONT>];
+<A NAME="76"></A>
+<A NAME="77"></A>            <FONT ID="SingleLineComment">//demonstrates parsing payload data
+<A NAME="78"></A></FONT>            <A HREF="../..//com/ireasoning/protocol/tl1/TL1Line.html">TL1Line</A> [] lines =  msg.getPayloadData();
+<A NAME="79"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>; j &lt; lines.length ; j++) 
+<A NAME="80"></A>            {
+<A NAME="81"></A>                <A HREF="../..//com/ireasoning/protocol/tl1/TL1Section.html">TL1Section</A> [] sections = lines[j].getSections();
+<A NAME="82"></A>                System.out.println( <FONT ID="StringLiteral">"cardname="</FONT> + lines[j].lookupValue(<FONT ID="StringLiteral">"CARDNAME"</FONT>));
+<A NAME="83"></A>                System.out.println( <FONT ID="StringLiteral">"line: "</FONT> + j);
+<A NAME="84"></A>                <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> k = <FONT ID="IntegerLiteral">0</FONT>; k &lt; sections.length ; k++) 
+<A NAME="85"></A>                {
+<A NAME="86"></A>                    System.out.println( <FONT ID="StringLiteral">"section: "</FONT> + k);
+<A NAME="87"></A>                    <A HREF="../..//com/ireasoning/protocol/tl1/TL1Field.html">TL1Field</A> [] fields = sections[k].getFields();
+<A NAME="88"></A>                    <FONT ID="For">for</FONT> ( <FONT ID="Int">int</FONT> m = <FONT ID="IntegerLiteral">0</FONT>; m &lt; fields.length; m++)
+<A NAME="89"></A>                    {
+<A NAME="90"></A>                        <A HREF="../..//com/ireasoning/protocol/tl1/TL1Field.html">TL1Field</A> f = fields[m];
+<A NAME="91"></A>                        System.out.println(<FONT ID="StringLiteral">"&lt;"</FONT> + f.getName() + <FONT ID="StringLiteral">"&gt; = &lt;"</FONT> + f.getValue()
+<A NAME="92"></A>                                + <FONT ID="StringLiteral">"&gt;"</FONT>);
+<A NAME="93"></A>                    }
+<A NAME="94"></A>                }
+<A NAME="95"></A>            }
+<A NAME="96"></A>
+<A NAME="97"></A>            <FONT ID="SingleLineComment">//log out
+<A NAME="98"></A></FONT>            req = TL1Command.canc_user(<FONT ID="StringLiteral">"abc"</FONT>);
+<A NAME="99"></A>            session.send(req);
+<A NAME="100"></A>
+<A NAME="101"></A>            <FONT ID="SingleLineComment">//session.close();
+<A NAME="102"></A></FONT>        }
+<A NAME="103"></A>        <FONT ID="Catch">catch</FONT>(Exception e)
+<A NAME="104"></A>        {
+<A NAME="105"></A>            System.out.println( e);
+<A NAME="106"></A>            e.printStackTrace();
+<A NAME="107"></A>        }
+<A NAME="108"></A>    }
+<A NAME="109"></A>
+<A NAME="110"></A>    <FONT ID="FormalComment">/**
+<A NAME="111"></A>     * Prints out response messages
+<A NAME="112"></A>     */</FONT>
+<A NAME="113"></A>    <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> print(<A HREF="../..//com/ireasoning/protocol/tl1/TL1ResponseMsg.html">TL1ResponseMsg</A> [] ms)
+<A NAME="114"></A>    {
+<A NAME="115"></A>        TL1Util.printOutputMsg(ms);
+<A NAME="116"></A>    }
+<A NAME="117"></A>}<FONT ID="SingleLineComment">//end of class tl1
+<A NAME="118"></A></FONT>
+<A NAME="119"></A>
+<A NAME="120"></A></pre>
+</BODY>
+</HTML>

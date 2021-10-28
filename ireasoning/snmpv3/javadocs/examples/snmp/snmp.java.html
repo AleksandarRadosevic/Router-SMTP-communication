@@ -1,0 +1,584 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>snmp (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002 iReasoning Networks. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Networks as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Networks.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/Session.html">com.ireasoning.protocol.Session</A>;
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="27"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">com.ireasoning.util.ParseArguments</A>;
+<A NAME="28"></A>
+<A NAME="29"></A><FONT ID="FormalComment">/**
+<A NAME="30"></A> * This class is the base class of snmp command line programs. It provides
+<A NAME="31"></A> * useful functionality such as parsing command line arguments, prints out
+<A NAME="32"></A> * PDU data, etc.
+<A NAME="33"></A> * &lt;br&gt;
+<A NAME="34"></A> * Note: MIB-II is preloaded.
+<A NAME="35"></A> */</FONT>
+<A NAME="36"></A><FONT ID="Public">public</FONT> <FONT ID="Abstract">abstract</FONT> <FONT ID="Class">class</FONT> snmp 
+<A NAME="37"></A>{
+<A NAME="38"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A> _parseArgs;
+<A NAME="39"></A>    
+<A NAME="40"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>         _port;
+<A NAME="41"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>         _version;
+<A NAME="42"></A>    <FONT ID="Protected">protected</FONT> String      _host;
+<A NAME="43"></A>    <FONT ID="Protected">protected</FONT> String      _authProtocol;
+<A NAME="44"></A>    <FONT ID="Protected">protected</FONT> String      _authPassword;
+<A NAME="45"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>         _privProtocol = SnmpConst.DES;
+<A NAME="46"></A>    <FONT ID="Protected">protected</FONT> String      _privPassword;
+<A NAME="47"></A>    <FONT ID="Protected">protected</FONT> String      _community;
+<A NAME="48"></A>    <FONT ID="Protected">protected</FONT> String      _user;
+<A NAME="49"></A>    <FONT ID="Protected">protected</FONT> String      _context;
+<A NAME="50"></A>    <FONT ID="Protected">protected</FONT> String[]    _oids ;
+<A NAME="51"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Boolean">boolean</FONT>     _isSnmpV3;
+<A NAME="52"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Boolean">boolean</FONT>     _numericalOID = <FONT ID="False">false</FONT>;
+<A NAME="53"></A>    <FONT ID="Protected">protected</FONT> String[]    _mibFiles;
+<A NAME="54"></A>    <FONT ID="Protected">protected</FONT> String      _mibString;
+<A NAME="55"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Int">int</FONT>         _transportLayer;
+<A NAME="56"></A>    
+<A NAME="57"></A>    <FONT ID="FormalComment">/**
+<A NAME="58"></A>     * Prints out usage
+<A NAME="59"></A>     * @param programName the program name, usually the class name
+<A NAME="60"></A>     * @param allowMultipleOIDs true if allowing user to specify multiple OIDs
+<A NAME="61"></A>     */</FONT>
+<A NAME="62"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printUsage(String programName, <FONT ID="Boolean">boolean</FONT> allowMultipleOIDs)
+<A NAME="63"></A>    {
+<A NAME="64"></A>        usage(programName, allowMultipleOIDs);
+<A NAME="65"></A>        
+<A NAME="66"></A>        System.out.println( <FONT ID="StringLiteral">"\nwhere possible options include:"</FONT>);
+<A NAME="67"></A>        System.out.println( <FONT ID="StringLiteral">"-?\tprint this Usage"</FONT>);
+<A NAME="68"></A>        System.out.println( <FONT ID="StringLiteral">"-h\tprint this Usage"</FONT>);
+<A NAME="69"></A>        System.out.println( <FONT ID="StringLiteral">"-o\tprint oids numerically"</FONT>);
+<A NAME="70"></A>        System.out.println( <FONT ID="StringLiteral">"-c &lt;c&gt;\tcommunity name"</FONT>);
+<A NAME="71"></A>        System.out.println( <FONT ID="StringLiteral">"-v &lt;1|2|3&gt;\tspecifies snmp version to use, default is 1"</FONT>);
+<A NAME="72"></A>        System.out.println( <FONT ID="StringLiteral">"-p &lt;p&gt;\tport number"</FONT>);
+<A NAME="73"></A>        System.out.println( <FONT ID="StringLiteral">"-m &lt;m&gt;\tmib files to load. Use ',' or ';' to separate multiple files"</FONT>);
+<A NAME="74"></A>        System.out.println(<FONT ID="StringLiteral">"-k &lt;UDP|TCP&gt;\ttransport layer, possible values are UDP or TCP"</FONT>);
+<A NAME="75"></A>        moreOptions();
+<A NAME="76"></A>        System.out.println( <FONT ID="StringLiteral">"\nSNMPv3 options:"</FONT>);
+<A NAME="77"></A>        System.out.println( <FONT ID="StringLiteral">"-u &lt;u&gt;\tuser name"</FONT>);
+<A NAME="78"></A>        <FONT ID="If">if</FONT>(!programName.equals(<FONT ID="StringLiteral">"snmptrap"</FONT>))
+<A NAME="79"></A>        {
+<A NAME="80"></A>            System.out.println( <FONT ID="StringLiteral">"-t &lt;t&gt;\tcontext name"</FONT>);
+<A NAME="81"></A>        }
+<A NAME="82"></A>        System.out.println( <FONT ID="StringLiteral">"-a &lt;a&gt;\tauthentication algorithm, one of MD5, SHA, SHA224, SHA256, SHA384 OR SHA512. MD5 by default."</FONT>);
+<A NAME="83"></A>        System.out.println( <FONT ID="StringLiteral">"-A &lt;A&gt;\tauthentication password"</FONT>);
+<A NAME="84"></A>        System.out.println( <FONT ID="StringLiteral">"-x &lt;x&gt;\tprivacy algorithm, one of DES, 3DES, AES, AES192 or AES256. DES by default."</FONT>);
+<A NAME="85"></A>        System.out.println( <FONT ID="StringLiteral">"-X &lt;X&gt;\tprivacy password"</FONT>);
+<A NAME="86"></A>        System.out.println( <FONT ID="StringLiteral">"\nExample:"</FONT>);
+<A NAME="87"></A>        printExample(programName);
+<A NAME="88"></A>    }
+<A NAME="89"></A>
+<A NAME="90"></A>    <FONT ID="FormalComment">/**
+<A NAME="91"></A>     * Prints usage lines without explanation lines
+<A NAME="92"></A>     */</FONT>
+<A NAME="93"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> usage(String programName, <FONT ID="Boolean">boolean</FONT> allowMultipleOIDs)
+<A NAME="94"></A>    {
+<A NAME="95"></A>        <FONT ID="If">if</FONT>(allowMultipleOIDs)
+<A NAME="96"></A>        {
+<A NAME="97"></A>            System.out.println( <FONT ID="StringLiteral">"Usage: java "</FONT> + programName + 
+<A NAME="98"></A>                    <FONT ID="StringLiteral">" [options...] &lt;hostname&gt; [&lt;OID&gt; ...]\n"</FONT>);
+<A NAME="99"></A>            System.out.println( <FONT ID="StringLiteral">"&lt;OID&gt;\tobject identifiers, .1.3 by default. Or MIB node name if MIB loaded"</FONT>);
+<A NAME="100"></A>        }
+<A NAME="101"></A>        <FONT ID="Else">else</FONT>
+<A NAME="102"></A>        {
+<A NAME="103"></A>            System.out.println( <FONT ID="StringLiteral">"Usage: java "</FONT> + programName + 
+<A NAME="104"></A>                    <FONT ID="StringLiteral">" [options...] &lt;hostname&gt; [&lt;OID&gt;]\n"</FONT>);
+<A NAME="105"></A>            System.out.println( <FONT ID="StringLiteral">"&lt;OID&gt;\tobject identifier, .1.3 by default."</FONT>);
+<A NAME="106"></A>        }
+<A NAME="107"></A>    }
+<A NAME="108"></A>    
+<A NAME="109"></A>    <FONT ID="FormalComment">/**
+<A NAME="110"></A>     * Prints out more options if any. It may be overridden by subclasses
+<A NAME="111"></A>     */</FONT>
+<A NAME="112"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> moreOptions()
+<A NAME="113"></A>    {
+<A NAME="114"></A>    }
+<A NAME="115"></A>
+<A NAME="116"></A>    <FONT ID="FormalComment">/**
+<A NAME="117"></A>     * Prints out the example usage
+<A NAME="118"></A>     */</FONT>
+<A NAME="119"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printExample(String programName)
+<A NAME="120"></A>    {
+<A NAME="121"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost .1.3"</FONT>);
+<A NAME="122"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost"</FONT>);
+<A NAME="123"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + 
+<A NAME="124"></A>            <FONT ID="StringLiteral">" localhost -v 3 -u newUser -A abc12345 -X abc12345 .1.3"</FONT> );
+<A NAME="125"></A>    }
+<A NAME="126"></A>    
+<A NAME="127"></A>    <FONT ID="FormalComment">/**
+<A NAME="128"></A>     * Prints SnmpPdu content to standard out
+<A NAME="129"></A>     */</FONT>
+<A NAME="130"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> print(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> pdu)
+<A NAME="131"></A>    {
+<A NAME="132"></A>        print(pdu, System.out);    
+<A NAME="133"></A>    }
+<A NAME="134"></A>    
+<A NAME="135"></A>    <FONT ID="FormalComment">/**
+<A NAME="136"></A>     * Prints SnmpPdu content to PrintStream p
+<A NAME="137"></A>     */</FONT>
+<A NAME="138"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> print(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> pdu, PrintStream p)
+<A NAME="139"></A>    {
+<A NAME="140"></A>        <FONT ID="If">if</FONT>(pdu.getErrorStatus() &gt; <FONT ID="IntegerLiteral">0</FONT>)
+<A NAME="141"></A>        {<FONT ID="SingleLineComment">//Error occurs or end of mib view reached.
+<A NAME="142"></A></FONT>            System.out.println( <FONT ID="StringLiteral">"PDU error status = "</FONT> + pdu.getErrorStatusString());
+<A NAME="143"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="144"></A>        }
+<A NAME="145"></A>        <FONT ID="If">if</FONT>(pdu.isSnmpV3AuthenticationFailed())
+<A NAME="146"></A>        {
+<A NAME="147"></A>            System.out.println( <FONT ID="StringLiteral">"Authentication failure. Reason:"</FONT>);
+<A NAME="148"></A>            printAuthFailReason(pdu);
+<A NAME="149"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="150"></A>        }
+<A NAME="151"></A>        print(pdu.getVarBinds(), p);
+<A NAME="152"></A>    }
+<A NAME="153"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> printAuthFailReason(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> pdu)
+<A NAME="154"></A>    {
+<A NAME="155"></A>        <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A> vb = pdu.getFirstVarBind();
+<A NAME="156"></A>        <FONT ID="If">if</FONT>(vb != <FONT ID="Null">null</FONT>)
+<A NAME="157"></A>        {
+<A NAME="158"></A>            printAuthFailReason(vb.getName());
+<A NAME="159"></A>        }
+<A NAME="160"></A>    }
+<A NAME="161"></A>    
+<A NAME="162"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> printAuthFailReason(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpOID.html">SnmpOID</A> oid)
+<A NAME="163"></A>    {
+<A NAME="164"></A>        <FONT ID="If">if</FONT>(oid.equals(AgentUsmStats.USM_STATS_UNKNOWN_USER_NAMES))
+<A NAME="165"></A>        {
+<A NAME="166"></A>            System.out.println( <FONT ID="StringLiteral">"Reason: Unknown user name"</FONT>);
+<A NAME="167"></A>        }
+<A NAME="168"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(oid.equals(AgentUsmStats.USM_STATS_DECRYPTION_ERRORS))
+<A NAME="169"></A>        {
+<A NAME="170"></A>            System.out.println( <FONT ID="StringLiteral">"USM decryption error"</FONT>);               
+<A NAME="171"></A>        }
+<A NAME="172"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(oid.equals(AgentUsmStats.USM_STATS_WRONG_DIGESTS))
+<A NAME="173"></A>        {
+<A NAME="174"></A>            System.out.println( <FONT ID="StringLiteral">"Wrong digest"</FONT>);               
+<A NAME="175"></A>        }
+<A NAME="176"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(oid.equals(AgentUsmStats.USM_STATS_UNKNOWN_ENGINE_IDS))
+<A NAME="177"></A>        {
+<A NAME="178"></A>            System.out.println( <FONT ID="StringLiteral">"Unkown engine ID"</FONT>);               
+<A NAME="179"></A>        }
+<A NAME="180"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(oid.equals(AgentUsmStats.USM_STATS_NOT_IN_TIMEWINDOWS))
+<A NAME="181"></A>        {
+<A NAME="182"></A>            System.out.println( <FONT ID="StringLiteral">"Not in time windows"</FONT>);               
+<A NAME="183"></A>        }
+<A NAME="184"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(oid.equals(AgentUsmStats.USM_STATS_UNSUPPORTED_SEC_LEVELS))
+<A NAME="185"></A>        {
+<A NAME="186"></A>            System.out.println( <FONT ID="StringLiteral">"Unsupported security levels"</FONT>);               
+<A NAME="187"></A>        }
+<A NAME="188"></A>    }
+<A NAME="189"></A>
+<A NAME="190"></A>    <FONT ID="FormalComment">/**
+<A NAME="191"></A>     * Prints variable binding array to standard out
+<A NAME="192"></A>     */</FONT>
+<A NAME="193"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> print(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A>[] varbinds)
+<A NAME="194"></A>    {
+<A NAME="195"></A>        print(varbinds, System.out);
+<A NAME="196"></A>    }
+<A NAME="197"></A>
+<A NAME="198"></A>    <FONT ID="FormalComment">/**
+<A NAME="199"></A>     * Prints variable binding array to PrintStream p
+<A NAME="200"></A>     */</FONT>
+<A NAME="201"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> print(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A>[] varbinds, PrintStream p)
+<A NAME="202"></A>    {
+<A NAME="203"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; varbinds.length ; i++)    
+<A NAME="204"></A>        {
+<A NAME="205"></A>            print(varbinds[i], p);
+<A NAME="206"></A>        }
+<A NAME="207"></A>    }
+<A NAME="208"></A>    
+<A NAME="209"></A>    <FONT ID="FormalComment">/**
+<A NAME="210"></A>     * Prints variable binding to standard out
+<A NAME="211"></A>     */</FONT>
+<A NAME="212"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> print(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A> var)
+<A NAME="213"></A>    {
+<A NAME="214"></A>        print(var, System.out);
+<A NAME="215"></A>    }
+<A NAME="216"></A>    
+<A NAME="217"></A>    <FONT ID="FormalComment">/**
+<A NAME="218"></A>     * Prints variable binding to PrintStream p
+<A NAME="219"></A>     */</FONT>
+<A NAME="220"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> print(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A> var, PrintStream p)
+<A NAME="221"></A>    {
+<A NAME="222"></A>        <FONT ID="If">if</FONT>(var == <FONT ID="Null">null</FONT>)
+<A NAME="223"></A>        {
+<A NAME="224"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="225"></A>        }
+<A NAME="226"></A>        <A HREF="../..//com/ireasoning/protocol/snmp/SnmpDataType.html">SnmpDataType</A>  n = var.getName();
+<A NAME="227"></A>        <A HREF="../..//com/ireasoning/protocol/snmp/SnmpDataType.html">SnmpDataType</A>  v = var.getValue();
+<A NAME="228"></A>        
+<A NAME="229"></A>        <FONT ID="If">if</FONT>(n == <FONT ID="Null">null</FONT>) 
+<A NAME="230"></A>        {
+<A NAME="231"></A>            p.println( <FONT ID="StringLiteral">"SnmpVarBind 's name is null"</FONT> );
+<A NAME="232"></A>        }
+<A NAME="233"></A>        String oid = n.toString();
+<A NAME="234"></A>        String value = v.toString();
+<A NAME="235"></A>
+<A NAME="236"></A>        <FONT ID="SingleLineComment">// **** Optional, if MIB OID name translation is desired.
+<A NAME="237"></A></FONT>        <FONT ID="If">if</FONT>(MibUtil.isMibFileLoaded())
+<A NAME="238"></A>        {
+<A NAME="239"></A>            <FONT ID="SingleLineComment">//Use MibUtil.translate to translate oid and its value to string
+<A NAME="240"></A></FONT>            <FONT ID="SingleLineComment">//format
+<A NAME="241"></A></FONT>            <A HREF="../..//com/ireasoning/protocol/snmp/NameValue.html">NameValue</A> nv = MibUtil.translate(oid, value, <FONT ID="True">true</FONT>);
+<A NAME="242"></A>            <FONT ID="If">if</FONT>(nv != <FONT ID="Null">null</FONT>)
+<A NAME="243"></A>            {
+<A NAME="244"></A>                <FONT ID="If">if</FONT>(!_numericalOID)
+<A NAME="245"></A>                {
+<A NAME="246"></A>                    oid = nv.getName();
+<A NAME="247"></A>                }
+<A NAME="248"></A>                value = nv.getValue();
+<A NAME="249"></A>            }
+<A NAME="250"></A>        }
+<A NAME="251"></A>
+<A NAME="252"></A>        <FONT ID="If">if</FONT>( v.getType() == SnmpDataType.TIMETICKS )
+<A NAME="253"></A>        {<FONT ID="SingleLineComment">//if it's time ticks, translate it to friendly readable format
+<A NAME="254"></A></FONT>            value = ((<A HREF="../..//com/ireasoning/protocol/snmp/SnmpTimeTicks.html">SnmpTimeTicks</A>) v).getTimeString();
+<A NAME="255"></A>        }
+<A NAME="256"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>( v.getType() == SnmpDataType.END_OF_MIB_VIEW )
+<A NAME="257"></A>        {
+<A NAME="258"></A>            p.println( <FONT ID="StringLiteral">"End of MIB reached."</FONT>);
+<A NAME="259"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="260"></A>        }
+<A NAME="261"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>( v.getType() == SnmpDataType.NO_SUCH_OBJECT )
+<A NAME="262"></A>        {
+<A NAME="263"></A>            p.println( <FONT ID="StringLiteral">"No such object."</FONT>);
+<A NAME="264"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="265"></A>        }
+<A NAME="266"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>( v.getType() == SnmpDataType.NO_SUCH_INSTANCE )
+<A NAME="267"></A>        { 
+<A NAME="268"></A>            p.println( <FONT ID="StringLiteral">"No such Instance."</FONT>);
+<A NAME="269"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="270"></A>        }
+<A NAME="271"></A>        p.println( oid + <FONT ID="StringLiteral">"\r\nValue ("</FONT> + v.getTypeString() +
+<A NAME="272"></A>                <FONT ID="StringLiteral">"): "</FONT>+ value + <FONT ID="StringLiteral">"\r\n"</FONT>);
+<A NAME="273"></A>    }
+<A NAME="274"></A>
+<A NAME="275"></A>    <FONT ID="FormalComment">/**
+<A NAME="276"></A>     * Creates a new instance of ParseArguments
+<A NAME="277"></A>     */</FONT>
+<A NAME="278"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A> newParseArgumentsInstance(String[] args)
+<A NAME="279"></A>    {
+<A NAME="280"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A>(args, <FONT ID="StringLiteral">"?ho"</FONT>, <FONT ID="StringLiteral">"utvaAXxcpmk"</FONT>);
+<A NAME="281"></A>    }
+<A NAME="282"></A>    
+<A NAME="283"></A>    <FONT ID="FormalComment">/**
+<A NAME="284"></A>     * Parses command options, allowing multiple OIDs and no command line
+<A NAME="285"></A>     * options
+<A NAME="286"></A>     * @see #parseOptions(String[] args, String programName, boolean allowMulitpleOIDs, boolean allowNoOption)
+<A NAME="287"></A>     */</FONT>
+<A NAME="288"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> parseOptions(String[] args, String program)
+<A NAME="289"></A>    {
+<A NAME="290"></A>        parseOptions(args, program, <FONT ID="True">true</FONT>, <FONT ID="False">false</FONT>);
+<A NAME="291"></A>    }
+<A NAME="292"></A>
+<A NAME="293"></A>    <FONT ID="FormalComment">/**
+<A NAME="294"></A>     * Parses command options
+<A NAME="295"></A>     * @param args the command arguments
+<A NAME="296"></A>     * @param programName the program name, usually the class name
+<A NAME="297"></A>     * @param allowMultipleOIDs true if allowing user to specify multiple OIDs
+<A NAME="298"></A>     * @param allowNoOption true if it's ok if no command line options is
+<A NAME="299"></A>     * supplied.
+<A NAME="300"></A>     */</FONT>
+<A NAME="301"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> parseOptions(String[] args, 
+<A NAME="302"></A>                                String programName, 
+<A NAME="303"></A>                                <FONT ID="Boolean">boolean</FONT> allowMultipleOIDs,
+<A NAME="304"></A>                                <FONT ID="Boolean">boolean</FONT> allowNoOption)
+<A NAME="305"></A>    {
+<A NAME="306"></A>        _parseArgs = newParseArgumentsInstance(args);
+<A NAME="307"></A>        <FONT ID="If">if</FONT>(_parseArgs.isSwitchPresent(<FONT ID="CharacerLiteral">'?'</FONT>) ||
+<A NAME="308"></A>           _parseArgs.isSwitchPresent(<FONT ID="CharacerLiteral">'h'</FONT>) ||
+<A NAME="309"></A>           (!allowNoOption &amp;&amp; args.length == <FONT ID="IntegerLiteral">0</FONT>))
+<A NAME="310"></A>        {<FONT ID="SingleLineComment">//for help, print usage.
+<A NAME="311"></A></FONT>            printUsage(programName, allowMultipleOIDs);
+<A NAME="312"></A>            System.exit(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="313"></A>        }
+<A NAME="314"></A>        
+<A NAME="315"></A>        _numericalOID = _parseArgs.isSwitchPresent(<FONT ID="CharacerLiteral">'o'</FONT>);
+<A NAME="316"></A>        _version = Integer.parseInt(_parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'v'</FONT>, <FONT ID="StringLiteral">"1"</FONT>)) ;<FONT ID="SingleLineComment">//default is SNMPv1
+<A NAME="317"></A></FONT>        <FONT ID="If">if</FONT>( _version &lt; <FONT ID="IntegerLiteral">3</FONT>) _version --;
+<A NAME="318"></A>        _isSnmpV3 = ( _version == SnmpConst.SNMPV3 );
+<A NAME="319"></A>
+<A NAME="320"></A>        SnmpSession.loadMib2();<FONT ID="SingleLineComment">//preload MIB-II (RFC1213) module
+<A NAME="321"></A></FONT>        <FONT ID="SingleLineComment">// **** Optional, if MIB OID name translation is desired.
+<A NAME="322"></A></FONT>        _mibString = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'m'</FONT>);
+<A NAME="323"></A>        <FONT ID="If">if</FONT>(_mibString != <FONT ID="Null">null</FONT> &amp;&amp; _mibString.length() &gt; <FONT ID="IntegerLiteral">0</FONT>)
+<A NAME="324"></A>        {<FONT ID="SingleLineComment">//load MIB files
+<A NAME="325"></A></FONT>            _mibFiles  = parseMibFiles(_mibString);
+<A NAME="326"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; _mibFiles.length ; i++) 
+<A NAME="327"></A>            {
+<A NAME="328"></A>                <FONT ID="Try">try</FONT>
+<A NAME="329"></A>                {
+<A NAME="330"></A>                    System.out.println( <FONT ID="StringLiteral">"Load MIB: "</FONT> + _mibFiles[i]);
+<A NAME="331"></A>                    SnmpSession.loadMib(_mibFiles[i]);
+<A NAME="332"></A>                }
+<A NAME="333"></A>                <FONT ID="Catch">catch</FONT>(java.text.ParseException pe)
+<A NAME="334"></A>                {
+<A NAME="335"></A>                    System.out.println( <FONT ID="StringLiteral">"MIB file ("</FONT> + _mibFiles[i] + <FONT ID="StringLiteral">") has syntax errors"</FONT>);
+<A NAME="336"></A>                }
+<A NAME="337"></A>                <FONT ID="Catch">catch</FONT>(IOException ie)
+<A NAME="338"></A>                {
+<A NAME="339"></A>                    System.out.println( <FONT ID="StringLiteral">"Can't load mib file: "</FONT> +
+<A NAME="340"></A>                            _mibFiles[i]);
+<A NAME="341"></A>                }
+<A NAME="342"></A>            }
+<A NAME="343"></A>        }
+<A NAME="344"></A>
+<A NAME="345"></A>        <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="346"></A>        {<FONT ID="SingleLineComment">//parse SNMPv3 options
+<A NAME="347"></A></FONT>            _user = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'u'</FONT>);
+<A NAME="348"></A>            <FONT ID="If">if</FONT>(_user == <FONT ID="Null">null</FONT>)
+<A NAME="349"></A>            {
+<A NAME="350"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> RuntimeException(<FONT ID="StringLiteral">"User name has to be provided."</FONT>);
+<A NAME="351"></A>            }
+<A NAME="352"></A>            _context = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'t'</FONT>);
+<A NAME="353"></A>            _authProtocol = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'a'</FONT>, <FONT ID="StringLiteral">"MD5"</FONT>);<FONT ID="SingleLineComment">//md5 is the default
+<A NAME="354"></A></FONT>            <FONT ID="If">if</FONT>(_authProtocol.equalsIgnoreCase(<FONT ID="StringLiteral">"md5"</FONT>))
+<A NAME="355"></A>            {
+<A NAME="356"></A>                _authProtocol = SnmpConst.MD5;
+<A NAME="357"></A>            }
+<A NAME="358"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(_authProtocol.equalsIgnoreCase(<FONT ID="StringLiteral">"sha"</FONT>))
+<A NAME="359"></A>            {
+<A NAME="360"></A>                _authProtocol = SnmpConst.SHA;
+<A NAME="361"></A>            }
+<A NAME="362"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(_authProtocol.equalsIgnoreCase(<FONT ID="StringLiteral">"sha224"</FONT>))
+<A NAME="363"></A>            {
+<A NAME="364"></A>                _authProtocol = SnmpConst.SHA224;
+<A NAME="365"></A>            }
+<A NAME="366"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(_authProtocol.equalsIgnoreCase(<FONT ID="StringLiteral">"sha256"</FONT>))
+<A NAME="367"></A>            {
+<A NAME="368"></A>                _authProtocol = SnmpConst.SHA256;
+<A NAME="369"></A>            }
+<A NAME="370"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(_authProtocol.equalsIgnoreCase(<FONT ID="StringLiteral">"sha384"</FONT>))
+<A NAME="371"></A>            {
+<A NAME="372"></A>                _authProtocol = SnmpConst.SHA384;
+<A NAME="373"></A>            }
+<A NAME="374"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(_authProtocol.equalsIgnoreCase(<FONT ID="StringLiteral">"sha512"</FONT>))
+<A NAME="375"></A>            {
+<A NAME="376"></A>                _authProtocol = SnmpConst.SHA512;
+<A NAME="377"></A>            }
+<A NAME="378"></A>            <FONT ID="Else">else</FONT>
+<A NAME="379"></A>            {
+<A NAME="380"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> RuntimeException(<FONT ID="StringLiteral">"Unknown authentication algorithm."</FONT>);
+<A NAME="381"></A>            }
+<A NAME="382"></A>            String s = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'x'</FONT>, <FONT ID="StringLiteral">"des"</FONT>);<FONT ID="SingleLineComment">//des is the default
+<A NAME="383"></A></FONT>            <FONT ID="If">if</FONT>(s.equalsIgnoreCase(<FONT ID="StringLiteral">"des"</FONT>))
+<A NAME="384"></A>            {
+<A NAME="385"></A>                _privProtocol = SnmpConst.DES;
+<A NAME="386"></A>            }
+<A NAME="387"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(s.equalsIgnoreCase(<FONT ID="StringLiteral">"3des"</FONT>))
+<A NAME="388"></A>            {
+<A NAME="389"></A>                _privProtocol = SnmpConst.TRIPLE_DES;
+<A NAME="390"></A>            }
+<A NAME="391"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(s.equalsIgnoreCase(<FONT ID="StringLiteral">"aes"</FONT>))
+<A NAME="392"></A>            {
+<A NAME="393"></A>                _privProtocol = SnmpConst.AES;
+<A NAME="394"></A>            }
+<A NAME="395"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(s.equalsIgnoreCase(<FONT ID="StringLiteral">"aes192"</FONT>))
+<A NAME="396"></A>            {
+<A NAME="397"></A>                _privProtocol = SnmpConst.AES192;
+<A NAME="398"></A>            }
+<A NAME="399"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(s.equalsIgnoreCase(<FONT ID="StringLiteral">"aes256"</FONT>))
+<A NAME="400"></A>            {
+<A NAME="401"></A>                _privProtocol = SnmpConst.AES256;
+<A NAME="402"></A>            }
+<A NAME="403"></A>            <FONT ID="Else">else</FONT>
+<A NAME="404"></A>            {
+<A NAME="405"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> RuntimeException(<FONT ID="StringLiteral">"Unknown privacy algorithm."</FONT>);
+<A NAME="406"></A>            }
+<A NAME="407"></A>            _authPassword = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'A'</FONT>);
+<A NAME="408"></A>            _privPassword = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'X'</FONT>);
+<A NAME="409"></A>        }
+<A NAME="410"></A>        _community = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'c'</FONT>, <FONT ID="StringLiteral">"public"</FONT>);
+<A NAME="411"></A>        _port = Integer.parseInt(_parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'p'</FONT>, <FONT ID="StringLiteral">"161"</FONT>));
+<A NAME="412"></A>        String transport = _parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'k'</FONT>, <FONT ID="StringLiteral">"UDP"</FONT>);
+<A NAME="413"></A>        _transportLayer = <FONT ID="StringLiteral">"UDP"</FONT>.equalsIgnoreCase(transport) ? Session.UDP : Session.TCP;
+<A NAME="414"></A>        parseArgs();
+<A NAME="415"></A>    }
+<A NAME="416"></A>
+<A NAME="417"></A>    <FONT ID="FormalComment">/**
+<A NAME="418"></A>     * Parses non-option arguments
+<A NAME="419"></A>     */</FONT>
+<A NAME="420"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> parseArgs()
+<A NAME="421"></A>    {
+<A NAME="422"></A>        String [] as = _parseArgs.getArguments();
+<A NAME="423"></A>        <FONT ID="If">if</FONT>(as.length &gt; <FONT ID="IntegerLiteral">0</FONT>)
+<A NAME="424"></A>        {
+<A NAME="425"></A>            _host = as[<FONT ID="IntegerLiteral">0</FONT>];
+<A NAME="426"></A>        }
+<A NAME="427"></A>
+<A NAME="428"></A>        <FONT ID="If">if</FONT>(as.length &gt; <FONT ID="IntegerLiteral">1</FONT>)
+<A NAME="429"></A>        {
+<A NAME="430"></A>            _oids = <FONT ID="New">new</FONT> String[as.length - <FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="431"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">1</FONT>; i &lt; as.length ; i++) 
+<A NAME="432"></A>            {
+<A NAME="433"></A>                _oids[i - <FONT ID="IntegerLiteral">1</FONT>] = as[i];
+<A NAME="434"></A>            }
+<A NAME="435"></A>        }
+<A NAME="436"></A>        <FONT ID="Else">else</FONT>
+<A NAME="437"></A>        {
+<A NAME="438"></A>            _oids = <FONT ID="New">new</FONT> String[]{<FONT ID="StringLiteral">".1.3"</FONT>};
+<A NAME="439"></A>        }
+<A NAME="440"></A>    }
+<A NAME="441"></A>    
+<A NAME="442"></A>    <FONT ID="FormalComment">/**
+<A NAME="443"></A>     * Prints values of all options
+<A NAME="444"></A>     */</FONT>
+<A NAME="445"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printOptions()
+<A NAME="446"></A>    {
+<A NAME="447"></A>        System.out.println( <FONT ID="StringLiteral">"Options:"</FONT>);
+<A NAME="448"></A>        System.out.println( <FONT ID="StringLiteral">"_____________________________________"</FONT>);
+<A NAME="449"></A>        System.out.println( <FONT ID="StringLiteral">"host =\t\t\t"</FONT> + _host);
+<A NAME="450"></A>        System.out.println( <FONT ID="StringLiteral">"port =\t\t\t"</FONT> + _port);
+<A NAME="451"></A>        System.out.println( <FONT ID="StringLiteral">"isSnmpV3 =\t\t"</FONT> + _isSnmpV3);
+<A NAME="452"></A>        System.out.println( <FONT ID="StringLiteral">"authProtocol =\t\t"</FONT> + _authProtocol);
+<A NAME="453"></A>        System.out.println( <FONT ID="StringLiteral">"authPassword =\t\t"</FONT> + _authPassword);
+<A NAME="454"></A>        System.out.println( <FONT ID="StringLiteral">"privProtocol =\t\t"</FONT> + _privProtocol);
+<A NAME="455"></A>        System.out.println( <FONT ID="StringLiteral">"privPassword =\t\t"</FONT> + _privPassword);
+<A NAME="456"></A>        System.out.println( <FONT ID="StringLiteral">"community =\t\t"</FONT> + _community);
+<A NAME="457"></A>        System.out.println( <FONT ID="StringLiteral">"user =\t\t\t"</FONT> + _user);
+<A NAME="458"></A>        System.out.println( <FONT ID="StringLiteral">"mib files =\t\t"</FONT> + _mibString);
+<A NAME="459"></A>        printMoreOptions();
+<A NAME="460"></A>        System.out.println( <FONT ID="StringLiteral">"_____________________________________"</FONT>);
+<A NAME="461"></A>    }
+<A NAME="462"></A>
+<A NAME="463"></A>    <FONT ID="FormalComment">/**
+<A NAME="464"></A>     * Prints values of other options if any. Can be implemented by subclasses
+<A NAME="465"></A>     */</FONT>
+<A NAME="466"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printMoreOptions()
+<A NAME="467"></A>    {
+<A NAME="468"></A>    }
+<A NAME="469"></A>
+<A NAME="470"></A>    <FONT ID="FormalComment">/**
+<A NAME="471"></A>     * Parses the mib file options, which is separated by ',' or ';'
+<A NAME="472"></A>     */</FONT>
+<A NAME="473"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> String[] parseMibFiles(String mibs)
+<A NAME="474"></A>    {
+<A NAME="475"></A>        StringTokenizer st = <FONT ID="New">new</FONT> StringTokenizer(mibs, <FONT ID="StringLiteral">";,"</FONT>);
+<A NAME="476"></A>        <FONT ID="Int">int</FONT> size = st.countTokens() ;
+<A NAME="477"></A>        String[] mibFiles = <FONT ID="New">new</FONT> String[size];
+<A NAME="478"></A>        <FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="479"></A>        <FONT ID="While">while</FONT> (st.hasMoreTokens()) 
+<A NAME="480"></A>        {
+<A NAME="481"></A>            mibFiles[i++] = st.nextToken();
+<A NAME="482"></A>        }
+<A NAME="483"></A>        <FONT ID="Return">return</FONT> mibFiles;
+<A NAME="484"></A>    }
+<A NAME="485"></A>    
+<A NAME="486"></A>
+<A NAME="487"></A>    <FONT ID="SingleLineComment">//
+<A NAME="488"></A></FONT>    <FONT ID="SingleLineComment">//  ------------ utility methods
+<A NAME="489"></A></FONT>    <FONT ID="SingleLineComment">//
+<A NAME="490"></A></FONT>
+<A NAME="491"></A>    <FONT ID="FormalComment">/**
+<A NAME="492"></A>     * Translates to SnmpDataType object. Used in snmptrap and snmpset classes
+<A NAME="493"></A>     * @param type  one of i, u, t, a, o, s, c
+<A NAME="494"></A>     * i: INTEGER, u: unsigned INTEGER, t: TIMETICKS,
+<A NAME="495"></A>     * a: IPADDRESS, o: OBJID, s: STRING, c: counter32, g: gauge, x: hex data (in "0x1B 0xAC ..." format)
+<A NAME="496"></A>     * @param value  value 
+<A NAME="497"></A>     */</FONT>
+<A NAME="498"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpDataType.html">SnmpDataType</A> translate(String type, String value)
+<A NAME="499"></A>    {
+<A NAME="500"></A>        <FONT ID="If">if</FONT>(type.equals(<FONT ID="StringLiteral">"i"</FONT>))
+<A NAME="501"></A>        {
+<A NAME="502"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpInt.html">SnmpInt</A>(Integer.parseInt(value));
+<A NAME="503"></A>        }
+<A NAME="504"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(type.equals(<FONT ID="StringLiteral">"u"</FONT>))
+<A NAME="505"></A>        {
+<A NAME="506"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpUInt.html">SnmpUInt</A>(Long.parseLong(value));
+<A NAME="507"></A>        }
+<A NAME="508"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(type.equals(<FONT ID="StringLiteral">"t"</FONT>))
+<A NAME="509"></A>        {
+<A NAME="510"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpTimeTicks.html">SnmpTimeTicks</A>(Long.parseLong(value));
+<A NAME="511"></A>        }
+<A NAME="512"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(type.equals(<FONT ID="StringLiteral">"a"</FONT>))
+<A NAME="513"></A>        {
+<A NAME="514"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpIpAddress.html">SnmpIpAddress</A>(value);
+<A NAME="515"></A>        }
+<A NAME="516"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(type.equals(<FONT ID="StringLiteral">"o"</FONT>))
+<A NAME="517"></A>        {
+<A NAME="518"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpOID.html">SnmpOID</A>(value);
+<A NAME="519"></A>        }
+<A NAME="520"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(type.equals(<FONT ID="StringLiteral">"s"</FONT>))
+<A NAME="521"></A>        {
+<A NAME="522"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpOctetString.html">SnmpOctetString</A>(value);
+<A NAME="523"></A>        }
+<A NAME="524"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(type.equals(<FONT ID="StringLiteral">"x"</FONT>))
+<A NAME="525"></A>        {
+<A NAME="526"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpOctetString.html">SnmpOctetString</A>(SnmpOctetString.getBytes(value));
+<A NAME="527"></A>        }
+<A NAME="528"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(type.equals(<FONT ID="StringLiteral">"c"</FONT>))
+<A NAME="529"></A>        {
+<A NAME="530"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpCounter32.html">SnmpCounter32</A>(value);
+<A NAME="531"></A>        }
+<A NAME="532"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(type.equals(<FONT ID="StringLiteral">"g"</FONT>))
+<A NAME="533"></A>        {
+<A NAME="534"></A>            <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpGauge32.html">SnmpGauge32</A>(value);
+<A NAME="535"></A>        }
+<A NAME="536"></A>        <FONT ID="Else">else</FONT>
+<A NAME="537"></A>        {
+<A NAME="538"></A>            <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> RuntimeException(<FONT ID="StringLiteral">"Unknown data type"</FONT>);
+<A NAME="539"></A>        }
+<A NAME="540"></A>    }
+<A NAME="541"></A>
+<A NAME="542"></A>    <FONT ID="FormalComment">/**
+<A NAME="543"></A>     * Helper method, returns byte array of passed hex or regular string
+<A NAME="544"></A>     */</FONT>
+<A NAME="545"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Byte">byte</FONT> [] getHexString(String text)
+<A NAME="546"></A>    {
+<A NAME="547"></A>        <FONT ID="If">if</FONT>(text.startsWith(<FONT ID="StringLiteral">"0x"</FONT>) || text.startsWith(<FONT ID="StringLiteral">"0X"</FONT>))
+<A NAME="548"></A>        {<FONT ID="SingleLineComment">//expecting something like "0X01ACDF11"
+<A NAME="549"></A></FONT>            <FONT ID="Int">int</FONT> len = text.length() - <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="550"></A>            <FONT ID="If">if</FONT>(len % <FONT ID="IntegerLiteral">2</FONT> != <FONT ID="IntegerLiteral">0</FONT>) 
+<A NAME="551"></A>            {
+<A NAME="552"></A>                <FONT ID="Throw">throw</FONT> <FONT ID="New">new</FONT> IllegalArgumentException(<FONT ID="StringLiteral">"Illegal hex string"</FONT>);
+<A NAME="553"></A>            }
+<A NAME="554"></A>            <FONT ID="Byte">byte</FONT> [] ret = <FONT ID="New">new</FONT> <FONT ID="Byte">byte</FONT>[len/<FONT ID="IntegerLiteral">2</FONT>];
+<A NAME="555"></A>            <FONT ID="Int">int</FONT> j = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="556"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; len ; ) 
+<A NAME="557"></A>            {
+<A NAME="558"></A>                String s = text.substring(i + <FONT ID="IntegerLiteral">2</FONT>, i + <FONT ID="IntegerLiteral">4</FONT>);
+<A NAME="559"></A>                <FONT ID="Int">int</FONT> value = Integer.parseInt(s, <FONT ID="IntegerLiteral">16</FONT>);
+<A NAME="560"></A>                ret[j++] = (<FONT ID="Byte">byte</FONT>) value;
+<A NAME="561"></A>                i += <FONT ID="IntegerLiteral">2</FONT>;
+<A NAME="562"></A>            }
+<A NAME="563"></A>
+<A NAME="564"></A>            <FONT ID="Return">return</FONT> ret;
+<A NAME="565"></A>        }
+<A NAME="566"></A>        <FONT ID="Else">else</FONT>
+<A NAME="567"></A>        {<FONT ID="SingleLineComment">//regular string
+<A NAME="568"></A></FONT>            <FONT ID="Return">return</FONT> text.getBytes();
+<A NAME="569"></A>        }
+<A NAME="570"></A>    }
+<A NAME="571"></A>
+<A NAME="572"></A>}
+<A NAME="573"></A><FONT ID="SingleLineComment">// end of class snmp
+<A NAME="574"></A></FONT></pre>
+</BODY>
+</HTML>

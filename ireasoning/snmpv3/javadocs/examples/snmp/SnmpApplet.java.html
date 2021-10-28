@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>SnmpApplet (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002-2003 iReasoning Inc. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Inc. as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Inc.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.applet.Applet;
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> java.awt.event.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/package-summary.html">com.ireasoning.protocol.*</A>;
+<A NAME="27"></A>
+<A NAME="28"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> SnmpApplet <FONT ID="Extends">extends</FONT> Applet <FONT ID="Implements">implements</FONT> ActionListener, <A HREF="../..//com/ireasoning/protocol/Listener.html">Listener</A>
+<A NAME="29"></A>{
+<A NAME="30"></A>    TextArea _textarea;
+<A NAME="31"></A>    TextField _subtreeOid;
+<A NAME="32"></A>
+<A NAME="33"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> init()
+<A NAME="34"></A>    {
+<A NAME="35"></A>        setLayout(<FONT ID="New">new</FONT> BorderLayout());
+<A NAME="36"></A>        Panel p = <FONT ID="New">new</FONT> Panel();
+<A NAME="37"></A>        p.setLayout(<FONT ID="New">new</FONT> BorderLayout());
+<A NAME="38"></A>        p.add(<FONT ID="New">new</FONT> Label(<FONT ID="StringLiteral">"Subtree OID:"</FONT>), BorderLayout.WEST);
+<A NAME="39"></A>        _subtreeOid = <FONT ID="New">new</FONT> TextField(<FONT ID="StringLiteral">".1.3"</FONT>);
+<A NAME="40"></A>        p.add(_subtreeOid, BorderLayout.CENTER);
+<A NAME="41"></A>        add(p, BorderLayout.NORTH);
+<A NAME="42"></A>        _textarea = <FONT ID="New">new</FONT> TextArea(<FONT ID="StringLiteral">""</FONT>, <FONT ID="IntegerLiteral">200</FONT>, <FONT ID="IntegerLiteral">120</FONT>);
+<A NAME="43"></A>        add(_textarea, BorderLayout.CENTER);
+<A NAME="44"></A>        Button btn = <FONT ID="New">new</FONT> Button(<FONT ID="StringLiteral">"Start"</FONT>);
+<A NAME="45"></A>        add(btn, BorderLayout.SOUTH);
+<A NAME="46"></A>        btn.addActionListener(<FONT ID="This">this</FONT>);
+<A NAME="47"></A>    }
+<A NAME="48"></A>    
+<A NAME="49"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> handleMsg(Object msgSender, <A HREF="../..//com/ireasoning/protocol/Msg.html">Msg</A> msg)
+<A NAME="50"></A>    {
+<A NAME="51"></A>        <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> pdu = (<A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A>)msg;
+<A NAME="52"></A>        <FONT ID="If">if</FONT>(pdu.hasMore())
+<A NAME="53"></A>        {
+<A NAME="54"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A>[] varbinds = pdu.getVarBinds();
+<A NAME="55"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; varbinds.length ; i++) 
+<A NAME="56"></A>            {
+<A NAME="57"></A>                _textarea.append(<FONT ID="StringLiteral">""</FONT> + varbinds[i] + <FONT ID="StringLiteral">"\n\n"</FONT>);
+<A NAME="58"></A>            }
+<A NAME="59"></A>        }
+<A NAME="60"></A>    }
+<A NAME="61"></A>    
+<A NAME="62"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> actionPerformed(ActionEvent e)
+<A NAME="63"></A>    {
+<A NAME="64"></A>        <FONT ID="Try">try</FONT>
+<A NAME="65"></A>        {
+<A NAME="66"></A>            _textarea.setText(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="67"></A>            String ip = getCodeBase().getHost();
+<A NAME="68"></A>            System.out.println( <FONT ID="StringLiteral">"ip:"</FONT> + ip);
+<A NAME="69"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(ip, <FONT ID="IntegerLiteral">161</FONT>, <FONT ID="StringLiteral">"public"</FONT>, <FONT ID="StringLiteral">"public"</FONT>, <FONT ID="IntegerLiteral">1</FONT>);
+<A NAME="70"></A>            session.snmpGetSubtree(_subtreeOid.getText().trim(), <FONT ID="This">this</FONT>);
+<A NAME="71"></A>        }
+<A NAME="72"></A>        <FONT ID="Catch">catch</FONT>(Exception ex)
+<A NAME="73"></A>        {
+<A NAME="74"></A>            System.out.println(ex);
+<A NAME="75"></A>            ex.printStackTrace();
+<A NAME="76"></A>        }
+<A NAME="77"></A>    }
+<A NAME="78"></A>}
+<A NAME="79"></A></pre>
+</BODY>
+</HTML>

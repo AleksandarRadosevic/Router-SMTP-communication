@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>snmptrapd (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002-2003 iReasoning Inc. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Inc. as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Inc.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/package-summary.html">com.ireasoning.protocol.*</A>;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="24"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">com.ireasoning.util.ParseArguments</A>;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="FormalComment">/**
+<A NAME="28"></A> * This example demonstrates how to write a trapd daemon to collect SNMPv1,v2c
+<A NAME="29"></A> * and v3 traps and informs. &lt;br&gt;
+<A NAME="30"></A> * A callback interface, Listener, is implemented, so it will get notified when
+<A NAME="31"></A> * a trap is received.
+<A NAME="32"></A> * Note:&lt;br&gt;
+<A NAME="33"></A> * Community name is not verified for each trap. So even if commnity name is not
+<A NAME="34"></A> * correct, it's still considered as valid trap. getCommunity() can be used to
+<A NAME="35"></A> * verify that.
+<A NAME="36"></A> *
+<A NAME="37"></A> * &lt;p&gt;
+<A NAME="38"></A> *
+<A NAME="39"></A> * For simplicity consideration, the SNMPv3 engine of trapd uses the same user settings as trap
+<A NAME="40"></A> * sender.
+<A NAME="41"></A> *
+<A NAME="42"></A> * &lt;pre&gt;
+<A NAME="43"></A> * Example: 
+<A NAME="44"></A> * java snmptrapd 
+<A NAME="45"></A> * java snmptrapd -v 3 -u newUser -A abc12345 -X abc12345 -l 12345 -e 456789
+<A NAME="46"></A> *
+<A NAME="47"></A> * Sample output:
+<A NAME="48"></A> * 
+<A NAME="49"></A> * Received SNMPv2/v3 trap from 127.0.0.1/127.0.0.1 
+<A NAME="50"></A> * Community: public 
+<A NAME="51"></A> * sysUpTime.0: 1 minute 43 seconds 
+<A NAME="52"></A> * snmpTrapOID.0: ifAdminStatus 
+<A NAME="53"></A> * ifAdminStatus.3: up
+<A NAME="54"></A> *
+<A NAME="55"></A> * &lt;/pre&gt;
+<A NAME="56"></A> */</FONT>
+<A NAME="57"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> snmptrapd <FONT ID="Extends">extends</FONT> <A HREF="snmp.java.html">snmp</A> <FONT ID="Implements">implements</FONT> <A HREF="../..//com/ireasoning/protocol/Listener.html">Listener</A> 
+<A NAME="58"></A>{
+<A NAME="59"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)
+<A NAME="60"></A>    {
+<A NAME="61"></A>        <A HREF="snmptrapd.java.html">snmptrapd</A> s = <FONT ID="New">new</FONT> <A HREF="snmptrapd.java.html">snmptrapd</A>();
+<A NAME="62"></A>        s.parseOptions(args, <FONT ID="StringLiteral">"snmptrapd"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="True">true</FONT>);
+<A NAME="63"></A>        s.trapd();
+<A NAME="64"></A>    }
+<A NAME="65"></A>
+<A NAME="66"></A>    <FONT ID="Void">void</FONT> trapd()
+<A NAME="67"></A>    {
+<A NAME="68"></A>        <FONT ID="Try">try</FONT>
+<A NAME="69"></A>        {
+<A NAME="70"></A>            System.out.println( <FONT ID="StringLiteral">"Trap receiver listening on port: "</FONT> + _port);
+<A NAME="71"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpTrapdSession.html">SnmpTrapdSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpTrapdSession.html">SnmpTrapdSession</A>(_port);
+<A NAME="72"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="73"></A>            {
+<A NAME="74"></A>                <FONT ID="SingleLineComment">//More users can be added by calling addV3Params
+<A NAME="75"></A></FONT>                session.addV3Params(_user, _authProtocol, _authPassword, _privProtocol,
+<A NAME="76"></A>                        _privPassword, <FONT ID="Null">null</FONT>);
+<A NAME="77"></A>            }
+<A NAME="78"></A>            
+<A NAME="79"></A>            <FONT ID="SingleLineComment">//register for trap event, so handleMsg will be called when trap comes
+<A NAME="80"></A></FONT>            session.addListener(<FONT ID="This">this</FONT>);
+<A NAME="81"></A>            
+<A NAME="82"></A>            <FONT ID="SingleLineComment">//blocks and wait for traps
+<A NAME="83"></A></FONT>            session.waitForTrap();
+<A NAME="84"></A>        }
+<A NAME="85"></A>        <FONT ID="Catch">catch</FONT>(IOException e)
+<A NAME="86"></A>        {
+<A NAME="87"></A>            System.out.println(e);
+<A NAME="88"></A>            e.printStackTrace();
+<A NAME="89"></A>        }
+<A NAME="90"></A>    }
+<A NAME="91"></A>
+<A NAME="92"></A>    <FONT ID="FormalComment">/**
+<A NAME="93"></A>     * Callback method, gets called when a trap is received
+<A NAME="94"></A>     * @param msg a SnmpDataType object, more specifically, a SNMPv1/v2c/v3 trap or inform object
+<A NAME="95"></A>     * @param msgSender ignored
+<A NAME="96"></A>     */</FONT>
+<A NAME="97"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> handleMsg(Object msgSender, <A HREF="../..//com/ireasoning/protocol/Msg.html">Msg</A> msg)  
+<A NAME="98"></A>    {
+<A NAME="99"></A>        <FONT ID="If">if</FONT>(msg.getType() == Msg.ERROR_TYPE)
+<A NAME="100"></A>        {
+<A NAME="101"></A>            <A HREF="../..//com/ireasoning/protocol/ErrorMsg.html">ErrorMsg</A> err = (<A HREF="../..//com/ireasoning/protocol/ErrorMsg.html">ErrorMsg</A>) msg;
+<A NAME="102"></A>            System.out.println( <FONT ID="StringLiteral">"Error occurred. Error code: "</FONT> + err.getErrorCode() + <FONT ID="StringLiteral">". Error message: "</FONT> + err.getErrorString() );
+<A NAME="103"></A>        }
+<A NAME="104"></A>        <FONT ID="Else">else</FONT>
+<A NAME="105"></A>        {
+<A NAME="106"></A>            printTrap((<A HREF="../..//com/ireasoning/protocol/snmp/SnmpDataType.html">SnmpDataType</A>)msg);
+<A NAME="107"></A>        }
+<A NAME="108"></A>    }
+<A NAME="109"></A>    
+<A NAME="110"></A>    <FONT ID="FormalComment">/**
+<A NAME="111"></A>     * Prints trap to standard out
+<A NAME="112"></A>     */</FONT>
+<A NAME="113"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> printTrap(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpDataType.html">SnmpDataType</A> t)
+<A NAME="114"></A>    {
+<A NAME="115"></A>        System.out.println( <FONT ID="StringLiteral">"Received type:"</FONT> + t.getType());
+<A NAME="116"></A>        <FONT ID="If">if</FONT>(t.getType() == SnmpConst.V1TRAP)
+<A NAME="117"></A>        {
+<A NAME="118"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpV1Trap.html">SnmpV1Trap</A> trap = (<A HREF="../..//com/ireasoning/protocol/snmp/SnmpV1Trap.html">SnmpV1Trap</A>) t;
+<A NAME="119"></A>            String name = MibUtil.translateSnmpV1Trap(trap);
+<A NAME="120"></A>            System.out.println(<FONT ID="StringLiteral">"Received SNMPv1 trap:"</FONT>);
+<A NAME="121"></A>            <FONT ID="If">if</FONT>(name != <FONT ID="Null">null</FONT>) System.out.println( <FONT ID="StringLiteral">"Name:"</FONT> + name);
+<A NAME="122"></A>            System.out.println(<FONT ID="StringLiteral">"Community: "</FONT> + trap.getCommunity());
+<A NAME="123"></A>            System.out.println(<FONT ID="StringLiteral">"Enterprise OID: "</FONT> + trap.getEnterprise());
+<A NAME="124"></A>            System.out.println(<FONT ID="StringLiteral">"Ip Address: "</FONT> + trap.getIpAddress());
+<A NAME="125"></A>            System.out.println(<FONT ID="StringLiteral">"Generic: "</FONT> + trap.getGenericString());
+<A NAME="126"></A>            System.out.println(<FONT ID="StringLiteral">"Specific: "</FONT> + trap.getSpecific());
+<A NAME="127"></A>            System.out.println(<FONT ID="StringLiteral">"TimeStamp: "</FONT> + trap.getTimestampString());
+<A NAME="128"></A>
+<A NAME="129"></A>            printVarBinds(trap.getVarBinds());
+<A NAME="130"></A>        }
+<A NAME="131"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(t.getType() == SnmpConst.V2TRAP)
+<A NAME="132"></A>        {
+<A NAME="133"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpV2Notification.html">SnmpV2Notification</A> trap = (<A HREF="../..//com/ireasoning/protocol/snmp/SnmpV2Notification.html">SnmpV2Notification</A>)t;
+<A NAME="134"></A>            System.out.println( <FONT ID="StringLiteral">"Received SNMPv2/v3 trap from "</FONT> + trap.getIpAddress());
+<A NAME="135"></A>            printV2Notification(trap);
+<A NAME="136"></A>        }
+<A NAME="137"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(t.getType() == SnmpConst.INFORM)
+<A NAME="138"></A>        {
+<A NAME="139"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpV2Notification.html">SnmpV2Notification</A> trap = (<A HREF="../..//com/ireasoning/protocol/snmp/SnmpV2Notification.html">SnmpV2Notification</A>)t;
+<A NAME="140"></A>            System.out.println( <FONT ID="StringLiteral">"Received SNMPv2/v3 inform from "</FONT> + trap.getIpAddress());
+<A NAME="141"></A>            printV2Notification(trap);
+<A NAME="142"></A>        }
+<A NAME="143"></A>    }
+<A NAME="144"></A>
+<A NAME="145"></A>    <FONT ID="FormalComment">/**
+<A NAME="146"></A>     * Prints SNMPv2 trap or inform
+<A NAME="147"></A>     */</FONT>
+<A NAME="148"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> printV2Notification(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpV2Notification.html">SnmpV2Notification</A> trap)
+<A NAME="149"></A>    {
+<A NAME="150"></A>        <FONT ID="Int">int</FONT> version = trap.getVersion();
+<A NAME="151"></A>        String ver = <FONT ID="StringLiteral">""</FONT> + (version == <FONT ID="IntegerLiteral">1</FONT> ? (++version) : version);<FONT ID="SingleLineComment">//change v2 version's from 1 to 2
+<A NAME="152"></A></FONT>        System.out.println(<FONT ID="StringLiteral">"Version: "</FONT> + ver);
+<A NAME="153"></A>        System.out.println( <FONT ID="StringLiteral">"Community: "</FONT> + trap.getCommunity() );
+<A NAME="154"></A>        System.out.println( <FONT ID="StringLiteral">"sysUpTime.0: "</FONT> + trap.getSysUpTimeString() );
+<A NAME="155"></A>        String name = MibUtil.translateOID(<FONT ID="StringLiteral">""</FONT> + trap.getSnmpTrapOID(), <FONT ID="False">false</FONT>);
+<A NAME="156"></A>        <FONT ID="If">if</FONT>(name == <FONT ID="Null">null</FONT>)
+<A NAME="157"></A>        {
+<A NAME="158"></A>            name = <FONT ID="StringLiteral">""</FONT> + trap.getSnmpTrapOID();
+<A NAME="159"></A>        }
+<A NAME="160"></A>        System.out.println(<FONT ID="StringLiteral">"snmpTrapOID.0: "</FONT> + name);
+<A NAME="161"></A>        printVarBinds(trap.getObjects());
+<A NAME="162"></A>    }
+<A NAME="163"></A>    
+<A NAME="164"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> printVarBinds(<A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A>[] vbs)
+<A NAME="165"></A>    {
+<A NAME="166"></A>        <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; vbs.length ; i++ )
+<A NAME="167"></A>        {
+<A NAME="168"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A> vb = vbs[i];
+<A NAME="169"></A>
+<A NAME="170"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/NameValue.html">NameValue</A> nv = MibUtil.translate(vb.getName(), vb.getValue().toString(), <FONT ID="False">false</FONT>);
+<A NAME="171"></A>            <FONT ID="If">if</FONT>(nv != <FONT ID="Null">null</FONT>)
+<A NAME="172"></A>            {
+<A NAME="173"></A>                System.out.println( nv.getName() + <FONT ID="StringLiteral">": "</FONT> + nv.getValue());
+<A NAME="174"></A>            }
+<A NAME="175"></A>            <FONT ID="Else">else</FONT>
+<A NAME="176"></A>            {
+<A NAME="177"></A>                System.out.println( vb.getName() + <FONT ID="StringLiteral">": "</FONT> + vb.getValue());
+<A NAME="178"></A>            }
+<A NAME="179"></A>        }
+<A NAME="180"></A>        System.out.println();
+<A NAME="181"></A>    }
+<A NAME="182"></A>
+<A NAME="183"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printExample(String programName)
+<A NAME="184"></A>    {
+<A NAME="185"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName  );
+<A NAME="186"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + 
+<A NAME="187"></A>                <FONT ID="StringLiteral">" -v 3  -u newUser -A abc12345 -X abc12345"</FONT> );
+<A NAME="188"></A>    }
+<A NAME="189"></A>
+<A NAME="190"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> parseOptions(String[] args, 
+<A NAME="191"></A>                                String programName, 
+<A NAME="192"></A>                                <FONT ID="Boolean">boolean</FONT> allowMultipleOIDs,
+<A NAME="193"></A>                                <FONT ID="Boolean">boolean</FONT> allowNoOption)
+<A NAME="194"></A>    {
+<A NAME="195"></A>        <FONT ID="Super">super</FONT>.parseOptions(args, programName, allowMultipleOIDs, allowNoOption);
+<A NAME="196"></A>        _port = Integer.parseInt(_parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'p'</FONT>, <FONT ID="StringLiteral">"162"</FONT>));
+<A NAME="197"></A>    }
+<A NAME="198"></A>
+<A NAME="199"></A>    <FONT ID="FormalComment">/**
+<A NAME="200"></A>     * Creates a new instance of ParseArguments
+<A NAME="201"></A>     */</FONT>
+<A NAME="202"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A> newParseArgumentsInstance(String[] args)
+<A NAME="203"></A>    {
+<A NAME="204"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A>(args, <FONT ID="StringLiteral">"?ho"</FONT>, <FONT ID="StringLiteral">"utvaAXxcpm"</FONT>);
+<A NAME="205"></A>    }
+<A NAME="206"></A>}<FONT ID="SingleLineComment">// end of class 
+<A NAME="207"></A></FONT>
+<A NAME="208"></A></pre>
+</BODY>
+</HTML>

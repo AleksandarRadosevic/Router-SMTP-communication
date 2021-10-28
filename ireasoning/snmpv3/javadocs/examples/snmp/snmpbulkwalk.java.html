@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>snmpbulkwalk (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002 iReasoning Networks. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Networks as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Networks.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/package-summary.html">com.ireasoning.protocol.*</A>;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="24"></A>
+<A NAME="25"></A><FONT ID="FormalComment">/**
+<A NAME="26"></A> * This class demonstrates an implementation of SNMP WALK by using
+<A NAME="27"></A> * more efficient SNMP GET_BULK operation.
+<A NAME="28"></A> * Note: Agent has to be able to support SNMPV2.
+<A NAME="29"></A> * &lt;pre&gt;
+<A NAME="30"></A> * Example:
+<A NAME="31"></A> * java snmpbulkwalk localhost .1.3.2
+<A NAME="32"></A> * java snmpbulkwalk localhost
+<A NAME="33"></A> * java snmpbulkwalk localhost -v 3 -u newUser -A abc12345 -X abc12345 .1.3.2
+<A NAME="34"></A> * &lt;/pre&gt;
+<A NAME="35"></A> */</FONT>
+<A NAME="36"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> snmpbulkwalk <FONT ID="Extends">extends</FONT> <A HREF="snmp.java.html">snmp</A>
+<A NAME="37"></A>    <FONT ID="Implements">implements</FONT> <A HREF="../..//com/ireasoning/protocol/Listener.html">Listener</A>
+<A NAME="38"></A>{
+<A NAME="39"></A>    
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)
+<A NAME="41"></A>    {
+<A NAME="42"></A>        <A HREF="snmpbulkwalk.java.html">snmpbulkwalk</A> s = <FONT ID="New">new</FONT> <A HREF="snmpbulkwalk.java.html">snmpbulkwalk</A>();
+<A NAME="43"></A>        s.parseOptions(args, <FONT ID="StringLiteral">"snmpbulkwalk"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="False">false</FONT>);
+<A NAME="44"></A>
+<A NAME="45"></A>        s.walk();
+<A NAME="46"></A>    }
+<A NAME="47"></A>    
+<A NAME="48"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> walk()
+<A NAME="49"></A>    {
+<A NAME="50"></A>        <FONT ID="Try">try</FONT>
+<A NAME="51"></A>        {
+<A NAME="52"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(_host, _port, _community,
+<A NAME="53"></A>                    _community, _version, _transportLayer);
+<A NAME="54"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="55"></A>            {
+<A NAME="56"></A>                session.setV3Params(_user, _authProtocol, _authPassword, _privProtocol, _privPassword, _context, <FONT ID="Null">null</FONT>);
+<A NAME="57"></A>            }
+<A NAME="58"></A>            session.snmpBulkWalk(_oids[<FONT ID="IntegerLiteral">0</FONT>], <FONT ID="This">this</FONT>);
+<A NAME="59"></A>        }
+<A NAME="60"></A>        <FONT ID="Catch">catch</FONT>(Exception e)
+<A NAME="61"></A>        {
+<A NAME="62"></A>            System.out.println(e);
+<A NAME="63"></A>            e.printStackTrace();
+<A NAME="64"></A>        }
+<A NAME="65"></A>    }
+<A NAME="66"></A>    
+<A NAME="67"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> handleMsg(Object session, <A HREF="../..//com/ireasoning/protocol/Msg.html">Msg</A> msg)
+<A NAME="68"></A>    {
+<A NAME="69"></A>        <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> pdu = (<A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A>) msg;
+<A NAME="70"></A>        <FONT ID="If">if</FONT>(!pdu.hasMore() &amp;&amp; pdu.getVarBindCount() == <FONT ID="IntegerLiteral">0</FONT>)
+<A NAME="71"></A>        {
+<A NAME="72"></A>            System.out.println( <FONT ID="StringLiteral">"&lt;End of MIB View Reached&gt;"</FONT>);
+<A NAME="73"></A>            ((<A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>)session).close();
+<A NAME="74"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="75"></A>        }
+<A NAME="76"></A>
+<A NAME="77"></A>        print(pdu);
+<A NAME="78"></A>
+<A NAME="79"></A>        <FONT ID="If">if</FONT>(!pdu.hasMore())
+<A NAME="80"></A>        {
+<A NAME="81"></A>            System.out.println( <FONT ID="StringLiteral">"&lt;End of MIB View Reached&gt;"</FONT>);
+<A NAME="82"></A>            ((<A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>)session).close();
+<A NAME="83"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="84"></A>        }
+<A NAME="85"></A>    }
+<A NAME="86"></A>    
+<A NAME="87"></A>}<FONT ID="SingleLineComment">// end of class snmpbulkwalk 
+<A NAME="88"></A></FONT></pre>
+</BODY>
+</HTML>

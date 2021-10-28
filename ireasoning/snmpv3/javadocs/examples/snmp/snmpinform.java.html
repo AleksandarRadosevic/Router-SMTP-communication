@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>snmpinform (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002 iReasoning Networks. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Networks as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Networks.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/TimeoutException.html">com.ireasoning.protocol.TimeoutException</A>;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="24"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">com.ireasoning.util.ParseArguments</A>;
+<A NAME="25"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="FormalComment">/**
+<A NAME="28"></A> * This class demonstrates two different implementations of snmp get_next operation. 
+<A NAME="29"></A> * &lt;br&gt;
+<A NAME="30"></A> * 1. Use SnmpSession.snmpGetNextRequest. This is a more convinient way. &lt;br&gt;
+<A NAME="31"></A> * 2. Use primitive SnmpSession.send &lt;br&gt;
+<A NAME="32"></A> * &lt;pre&gt;
+<A NAME="33"></A> * Example:
+<A NAME="34"></A> * java snmpinform -s 10333 -q .1.3.6.1.2.1.2.2.1.1 localhost
+<A NAME="35"></A> * java snmpinform -v 3 -u newUser -A abc12345 -X abc12345 -s 10333 -q .1.3.6.1.2.1.2.2.1.1 localhost
+<A NAME="36"></A> * 
+<A NAME="37"></A> * &lt;/pre&gt;
+<A NAME="38"></A> */</FONT>
+<A NAME="39"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> snmpinform <FONT ID="Extends">extends</FONT> <A HREF="snmp.java.html">snmp</A>
+<A NAME="40"></A>{
+<A NAME="41"></A>    <FONT ID="Long">long</FONT>    _sysUpTime   = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="42"></A>    String  _snmpTrapOID = <FONT ID="StringLiteral">".1.3"</FONT>;
+<A NAME="43"></A>    <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBindList.html">SnmpVarBindList</A> _vblist = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBindList.html">SnmpVarBindList</A>();
+<A NAME="44"></A>
+<A NAME="45"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)
+<A NAME="46"></A>    {
+<A NAME="47"></A>        <A HREF="snmpinform.java.html">snmpinform</A> s = <FONT ID="New">new</FONT> <A HREF="snmpinform.java.html">snmpinform</A>();
+<A NAME="48"></A>        s.parseOptions(args, <FONT ID="StringLiteral">"snmpinform"</FONT>);
+<A NAME="49"></A>        <FONT ID="SingleLineComment">// s.printOptions();
+<A NAME="50"></A></FONT>        s.inform();
+<A NAME="51"></A>    }
+<A NAME="52"></A>    
+<A NAME="53"></A>    <FONT ID="FormalComment">/**
+<A NAME="54"></A>     * use SnmpSession.snmpGetNextRequest
+<A NAME="55"></A>     */</FONT>
+<A NAME="56"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> inform()
+<A NAME="57"></A>    {
+<A NAME="58"></A>        <FONT ID="Try">try</FONT>
+<A NAME="59"></A>        {
+<A NAME="60"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(_host, _port, _community,
+<A NAME="61"></A>                    _community, _version);
+<A NAME="62"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="63"></A>            {
+<A NAME="64"></A>                session.setV3Params(_user, _authProtocol, _authPassword, _privProtocol, _privPassword, _context, <FONT ID="Null">null</FONT>);
+<A NAME="65"></A>            }
+<A NAME="66"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A> [] vbs = <FONT ID="Null">null</FONT>;
+<A NAME="67"></A>            <FONT ID="If">if</FONT>(_vblist.size() &gt; <FONT ID="IntegerLiteral">0</FONT>)
+<A NAME="68"></A>            {
+<A NAME="69"></A>                vbs = _vblist.toArray();
+<A NAME="70"></A>            }
+<A NAME="71"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> retPdu = session.snmpInformRequest(_sysUpTime, <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpOID.html">SnmpOID</A>(_snmpTrapOID), vbs);
+<A NAME="72"></A>            session.close();
+<A NAME="73"></A>        }
+<A NAME="74"></A>        <FONT ID="Catch">catch</FONT>(<A HREF="../..//com/ireasoning/protocol/TimeoutException.html">TimeoutException</A> timeout)
+<A NAME="75"></A>        {
+<A NAME="76"></A>            System.out.println( <FONT ID="StringLiteral">"time out"</FONT>);
+<A NAME="77"></A>        }
+<A NAME="78"></A>        <FONT ID="Catch">catch</FONT>(IOException e)
+<A NAME="79"></A>        {
+<A NAME="80"></A>            System.out.println(e);
+<A NAME="81"></A>            e.printStackTrace();
+<A NAME="82"></A>        }
+<A NAME="83"></A>    }
+<A NAME="84"></A>
+<A NAME="85"></A>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="86"></A></FONT>    <FONT ID="SingleLineComment">// Parsing command line options
+<A NAME="87"></A></FONT>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="88"></A></FONT>    
+<A NAME="89"></A>    <FONT ID="FormalComment">/**
+<A NAME="90"></A>     * Prints usage lines without explanation lines
+<A NAME="91"></A>     */</FONT>
+<A NAME="92"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> usage(String programName, <FONT ID="Boolean">boolean</FONT> allowMultipleOIDs)
+<A NAME="93"></A>    {
+<A NAME="94"></A>        System.out.println( <FONT ID="StringLiteral">"Usage: java "</FONT> + programName + <FONT ID="StringLiteral">" [options...] &lt;hostname&gt;\n"</FONT>);
+<A NAME="95"></A>    }
+<A NAME="96"></A>
+<A NAME="97"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> moreOptions()
+<A NAME="98"></A>    {
+<A NAME="99"></A>        System.out.println( <FONT ID="StringLiteral">"-s &lt;s&gt;\tsysUpTime or timestamp"</FONT>);
+<A NAME="100"></A>        System.out.println( <FONT ID="StringLiteral">"-q &lt;o&gt;\tsnmpTrapOID"</FONT>);
+<A NAME="101"></A>    }
+<A NAME="102"></A>    
+<A NAME="103"></A>    <FONT ID="FormalComment">/**
+<A NAME="104"></A>     * Parses non-option arguments
+<A NAME="105"></A>     */</FONT>
+<A NAME="106"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> parseArgs()
+<A NAME="107"></A>    {
+<A NAME="108"></A>        String [] as = _parseArgs.getArguments();
+<A NAME="109"></A>        <FONT ID="If">if</FONT>(as.length &gt; <FONT ID="IntegerLiteral">0</FONT>)
+<A NAME="110"></A>        {
+<A NAME="111"></A>            _host = as[<FONT ID="IntegerLiteral">0</FONT>];
+<A NAME="112"></A>        }
+<A NAME="113"></A>
+<A NAME="114"></A>        <FONT ID="Int">int</FONT> start = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="115"></A>        <FONT ID="While">while</FONT>(start &lt; as.length)
+<A NAME="116"></A>        {
+<A NAME="117"></A>            String oid = as[start];
+<A NAME="118"></A>            String type = as[start + <FONT ID="IntegerLiteral">1</FONT>];
+<A NAME="119"></A>            String value = as[start + <FONT ID="IntegerLiteral">2</FONT>];
+<A NAME="120"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpDataType.html">SnmpDataType</A> t = translate(type, value);
+<A NAME="121"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A> vb = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A>(oid, t);
+<A NAME="122"></A>            _vblist.add(vb);
+<A NAME="123"></A>            start += <FONT ID="IntegerLiteral">3</FONT>;
+<A NAME="124"></A>        }
+<A NAME="125"></A>    }
+<A NAME="126"></A>
+<A NAME="127"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printExample(String programName)
+<A NAME="128"></A>    {
+<A NAME="129"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + 
+<A NAME="130"></A>                <FONT ID="StringLiteral">" -s 10333 -q .1.3.6.1.2.1.2.2.1.1 localhost"</FONT> ); 
+<A NAME="131"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + 
+<A NAME="132"></A>                <FONT ID="StringLiteral">" -s 10333 -q .1.3.6.1.2.1.2.2.1.7 "</FONT> + <FONT ID="StringLiteral">"localhost 1.3.6.1.2.1.2.2.1.7.3 i 1"</FONT> );
+<A NAME="133"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + 
+<A NAME="134"></A>                <FONT ID="StringLiteral">" -v 3 -u newUser -A abc12345 -X abc12345 -s 10333 -q .1.3.6.1.2.1.2.2.1.1 "</FONT> +
+<A NAME="135"></A>                <FONT ID="StringLiteral">"localhost"</FONT> );
+<A NAME="136"></A>    }
+<A NAME="137"></A>
+<A NAME="138"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> parseOptions(String[] args, String program)
+<A NAME="139"></A>    {
+<A NAME="140"></A>        <FONT ID="Super">super</FONT>.parseOptions(args, program);
+<A NAME="141"></A>        _sysUpTime   = Integer.parseInt(_parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'s'</FONT>, <FONT ID="StringLiteral">"0"</FONT>));
+<A NAME="142"></A>        _port = Integer.parseInt(_parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'p'</FONT>, <FONT ID="StringLiteral">"162"</FONT>));
+<A NAME="143"></A>    }
+<A NAME="144"></A>
+<A NAME="145"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printMoreOptions()
+<A NAME="146"></A>    {
+<A NAME="147"></A>        System.out.println( <FONT ID="StringLiteral">"sysUpTime =\t\t"</FONT> + _sysUpTime);
+<A NAME="148"></A>        System.out.println( <FONT ID="StringLiteral">"snmpTrapOID =\t\t"</FONT> + _snmpTrapOID);
+<A NAME="149"></A>    }
+<A NAME="150"></A>
+<A NAME="151"></A>    <FONT ID="FormalComment">/**
+<A NAME="152"></A>     * Creates a new instance of ParseArguments
+<A NAME="153"></A>     */</FONT>
+<A NAME="154"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A> newParseArgumentsInstance(String[] args)
+<A NAME="155"></A>    {
+<A NAME="156"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A>(args, <FONT ID="StringLiteral">"?ho"</FONT>, <FONT ID="StringLiteral">"utvaAXxcpmsq"</FONT>);
+<A NAME="157"></A>    }
+<A NAME="158"></A>    
+<A NAME="159"></A>}<FONT ID="SingleLineComment">// end of class snmpinform 
+<A NAME="160"></A></FONT>
+<A NAME="161"></A></pre>
+</BODY>
+</HTML>

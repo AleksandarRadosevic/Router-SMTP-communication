@@ -1,0 +1,204 @@
+SNMP API END USER LICENSE AGREEMENT
+
+IDESKCENTRIC INC. SOFTWARE PRODUCTS ONLY BE USED UNDER LICENSE WITH IDESKCENTRIC 
+INC. PLEASE READ THE FOLLOWING LICENSE AGREEMENT CAREFULLY. IF YOU DISAGREE 
+WITH ANY OF THE TERMS OF THIS LICENSE AGREEMENT, YOU MUST PROMPTLY REMOVE THE
+SOFTWARE FROM YOUR SYSTEM.
+
+Licensed program: IDESKCENTRIC SNMP API
+
+NOTICE: THIS IDESKCENTRIC INC. PRODUCT (TOGETHER WITH ITS ACCOMPANYING 
+DOCUMENTATION, THE "PRODUCT") IS THE PROPERTY OF IDESKCENTRIC INC. 
+("IDESKCENTRIC"). THE PRODUCT IS MADE AVAILABLE TO YOU, THE ORIGINAL PURCHASER,
+SUBJECT TO THE FOLLOWING LICENSE AGREEMENT ("LICENSE"). PLEASE READ THIS 
+LICENSE CAREFULLY BEFORE INSTALLING OR USING THE PRODUCT. A COPY OF THIS 
+LICENSE IS AVAILABLE FOR YOUR FUTURE REFERENCE IN THE "LICENSE.TXT" FILE 
+PROVIDED WITH THE PRODUCT. IDESKCENTRIC is only willing to grant you this License 
+if you obtained the Product from IDESKCENTRIC or an IDESKCENTRIC authorized 
+reseller. If you obtained the Product from any other source you may not install
+or use the Product. 
+
+1. Ownership. The Product is proprietary to IDESKCENTRIC. The Product is 
+licensed, not sold, to you notwithstanding any reference herein to 
+"purchases". You acknowledge and agree that: (a) the Product is protected 
+under U.S. copyright and other laws; (b) IDESKCENTRIC and its licensors retain 
+all copyrights and other intellectual property rights in the Product; (c) 
+there are no implied licenses under this License, and any rights not 
+expressly granted to you hereunder are reserved by IDESKCENTRIC; (d) you
+acquire no ownership or other interest (other than your license rights) in 
+or to the Product; and (e) IDESKCENTRIC owns all copies of the Product,
+however made. You agree that you will not, at any time, contest anywhere 
+in the world IDESKCENTRIC's ownership of the Product, nor will you challenge
+the validity of IDESKCENTRIC's rights in the Product. You have no rights 
+hereunder to use any trademark or service mark belonging to IDESKCENTRIC. 
+
+2. GRANT OF LICENSE AND SCOPE OF USE. 
+
+2.1 Grant of License. Subject to the terms and conditions of this Agreement,
+IDESKCENTRIC grants to you a personal, nonexclusive, nontransferable and limited 
+license to install and execute the Product on one (1) computer for use by you 
+or, if you are an entity, one (1) person in your organization ("Named User")
+solely to create, compile (including byte code compile), test and deploy, in
+source or object code form, your own application programs and other works
+("Works"). Subject to the other terms and conditions of this Agreement, you 
+may distribute your Works to others for production use. You may also make one
+(1) backup copy of the Product solely to replace the original copy provided to 
+you if the original copy is damaged or destroyed. All rights not specifically 
+granted to you herein are retained by IDESKCENTRIC. 
+
+2.2 Multiple Licensed Copies. You may purchase from IDESKCENTRIC or its
+authorized reseller the right to make multiple copies of the Product (each, 
+a "Licensed Copy") or the right to permit multiple Named Users to use a 
+Licensed Copy. Such rights will be effective only when granted in writing 
+by IDESKCENTRIC or its authorized reseller and are conditioned upon your payment
+of the applicable fees. If you purchase the right to make multiple Licensed
+Copies, you are granted, for each Licensed Copy, the personal, nonexclusive, 
+nontransferable and limited license to install and execute the Licensed Copy 
+on one (1) computer solely as permitted under Section 2.1, subject to all 
+the terms and conditions of this Agreement. If you purchase the right to 
+permit multiple Named Users to use a Licensed Copy then you are granted 
+for such Licensed Copy, the personal, nonexclusive, nontransferable and 
+limited license to install and execute the Licensed Copy on one (1) computer 
+solely as permitted under Section 2.1 exclusively for use by such number of 
+Named Users, subject to all the terms and conditions of this Agreement. You 
+agree that you will not install or execute the Product on more computers than
+the number Licensed Copies that IDESKCENTRIC or its authorized reseller has
+expressly permitted you to make and you will not allow the Product to be used
+by more users than the number of Named Users that IDESKCENTRIC or its authorized
+reseller has expressly permitted to use each Licensed Copy. 
+
+3. GENERAL TERMS THAT APPLY TO COMPILED PROGRAMS AND REDISTRIBUTABLES. 
+
+3.1 Redistributables. The Product may include certain files, libraries and/or
+source code specifically designated as "redistributables" by IDESKCENTRIC in the
+accompanying printed or on-line documentation and that are necessary to use 
+Works created using the Product ("Redistributables"). From time to time, 
+IDESKCENTRIC may designate other files as Redistributables. You should refer to 
+the documentation, including any "readme" or "deploy" files provided with the
+Product, for additional information regarding Redistributables. Subject to the 
+terms and conditions of this License, you may freely redistribute source code 
+or compiled code that is entirely your own and does not contain any
+Redistributables. 
+
+3.2 Certain Restrictions. Regardless of any modifications that you make and 
+regardless of how you might compile, link, or package your Works: (a) you may
+not permit your End Users to modify or further distribute Redistributables or
+use Redistributables in any program that they create; (b) you may not use 
+IDESKCENTRIC's or any of its suppliers' names, logos, or trademarks to market
+your Works, except to state descriptively that your Work was written using the
+Product; (c) you may not incorporate or distribute a Redistributable with a 
+Work or other program that is generally competitive with or a substitute for
+the Product and the IDESKCENTRIC MIB browser; and (d) you may only distribute
+Redistributables with Works that add primary and substantial functionality to
+the Redistributables and are not merely a set or subset of any of the 
+Redistributables, and that are created in accordance with the terms of this
+License. 
+
+3.3 Third Party Software. The Product, including Redistributables, may include
+source code, redistributable files, and/or other files provided by a third
+party vendor ("Third Party Product"). Since use of Third Party Product might be
+subject to license restrictions imposed by the third party vendor, you should
+refer to the on-line documentation (if any) provided with Third Party Product 
+for any license restrictions imposed by the third party vendor. In any event, 
+any license restrictions imposed by a third party vendor are in addition to, 
+not in lieu of, the terms and conditions of this License. 
+
+3.4 Other Rights. Contact IDESKCENTRIC for the applicable royalties due and other
+licensing terms for all other uses or distribution of the Redistributables. 
+
+4. Limitations. You may not: (a) modify, adapt, alter, translate, or create 
+derivative works of the Product or merge the Product with other software other
+than as described in the Product's accompanying documentation or as approved
+of in writing by IDESKCENTRIC; (b) lease, rent or loan the Product to any third 
+party; (c) sublicense, distribute or otherwise transfer the Product or any 
+component thereof to any third party except as expressly authorized under 
+Section 3; (d) reverse engineer, decompile, disassemble, or otherwise attempt 
+to derive the source code of the Product; (e) remove, alter, or obscure any 
+confidentiality or proprietary notices (including copyright and trademark
+notices) of IDESKCENTRIC or its suppliers on the Product; (f) allow third parties 
+to access or use the Product such as in a time-sharing arrangement or operate
+the Product as part of a service bureau or, except as expressly authorized 
+under Sections 2 or 3, otherwise for the use or benefit of third parties;
+(g) reproduce or use the Product except as expressly authorized under Sections
+2 or 3; or (h) disclose or publish performance benchmark results for the
+Product. The rights granted under this License apply only to this Product. You
+must procure a separate license to use other IDESKCENTRIC software. Furthermore, 
+you may not permit your End Users to conduct the restricted activities limited 
+by items (a) through (e), (g) and (h) above insofar as they apply to 
+Redistributables, and such End User's sublicense rights to the Redistributables
+are conditioned upon compliance with such limitations. The limitations in this 
+Section 4 apply equally to your use of the Product, in whole or in part, 
+including any component or Redistributable. 
+
+5. LIMITED WARRANTY.
+(a) The LICENSED PROGRAM is provided without any representations or warranties
+of any sort . Without limiting the foregoing, IDESKCENTRIC does not warrant that 
+any LICENSED PROGRAM will meet Customer's requirements or will be error free.
+(b) EXCEPT AS PROVIDED ABOVE, IDESKCENTRIC MAKES NO WARRANTY, EXPRESS OR IMPLIED,
+AND DISCLAIMS ANY WARRANTIES WITH RESPECT TO THE LICENSED PROGRAM OR 
+DOCUMENTATION, INCLUDING, WITHOUT LIMITATION, ANY WARRANTY OF FITNESS FOR A
+PARTICULAR PURPOSE OR MERCHANTABILITY OR NONINFRINGEMENT. 
+
+6. SERVICES; UPDATES; PRODUCT CHANGES. IDESKCENTRIC is not required under this 
+License to provide any installation, training or other services to you. Such 
+services, if available, must be purchased separately. If, pursuant to a 
+separate support agreement or otherwise, IDESKCENTRIC provides you with a new
+release, error correction, update, upgrade or other modification to the
+Product, such modification will be deemed part of the Product, and subject to 
+the terms of this License, unless the modification is expressly provided
+subject to a separate license agreement. IDESKCENTRIC reserves the right at any
+time not to release or to discontinue release of any Product and to alter 
+prices, features, specifications, capabilities, functions, licensing terms,
+release dates, general availability or other characteristics of any future 
+releases of the Product. 
+
+7. Export Control. You may not directly or indirectly transfer the Product,
+including its documentation, to any country if such transfer would be prohibited
+by applicable law, including the U.S. Export Administration Act and the 
+regulations issued thereunder. You agree to the foregoing and you are 
+representing and warranting that you are not located in, under the control of,
+or a national or resident of any such country. You will be solely responsible 
+for identifying and complying with all laws of any jurisdiction outside of the 
+United States regarding the import, export or use of Products and technical data
+supplied by IDESKCENTRIC. You will obtain at your own expense all licenses, 
+permits or approvals required by any government to use the Product.
+
+8. TERMINATION. Without prejudice to any other rights, IDESKCENTRIC may terminate 
+this agreement if you fail to comply with the terms and conditions of this 
+agreement. In such event, you must destroy all copies of the SOFTWARE and all 
+of its component parts.
+
+9. Confidentiality. The Product (including its underlying source code) and the
+terms of this License contain confidential information of IDESKCENTRIC. You agree
+to hold this information in confidence, not disclose it to any person (other 
+than your employees and individual contractors who use the Product and who have
+agreed to keep confidential any of IDESKCENTRIC's confidential information that
+you provide to them), and not use it for any purpose other than the use and 
+operation of the Product as permitted under this License. These restrictions 
+do not apply to any information which is or becomes (through no fault of yours)
+publicly available. If you are required by law or order of a court or other 
+government authority to disclose IDESKCENTRIC's confidential information, then
+you will immediately notify IDESKCENTRIC as soon as possible, but in any event
+prior to the disclosure, and will cooperate with IDESKCENTRIC, at its expense and 
+request, in any lawful action to contest or limit the scope of such required 
+disclosure. 
+
+10. LIMITATION OF LIABILITY. IN NO EVENT WILL IDESKCENTRIC BE LIABLE TO ANY PARTY
+FOR ANY INDIRECT, INCIDENTAL, CONSEQUENTIAL, EXEMPLARY, SPECIAL OR PUNITIVE
+DAMAGES, INCLUDING ANY LOSS OF PROFIT, REVENUE, BUSINESS OPPORTUNITY OR DATA,
+ARISING FROM OR RELATING TO THIS LICENSE OR THE PRODUCT, WHETHER IN CONTRACT, 
+IN TORT OR OTHERWISE, EVEN IF IDESKCENTRIC KNEW, SHOULD HAVE KNOWN OR HAS BEEN 
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. IDESKCENTRIC'S TOTAL CUMULATIVE
+LIABILITY ARISING FROM OR RELATED TO THIS LICENSE OR THE PRODUCT, WHETHER IN
+CONTRACT, IN TORT OR OTHERWISE, WILL NOT EXCEED THE FEES ACTUALLY PAID BY YOU
+UNDER THIS LICENSE. THIS SECTION 10 WILL APPLY EVEN IF AN EXCLUSIVE REMEDY 
+HEREUNDER HAS FAILED OF ITS ESSENTIAL PURPOSE. 
+
+SOME STATES DO NOT ALLOW THE EXCLUSION OR LIMITATION OF INCIDENTAL OR 
+CONSEQUENTIAL DAMAGES, SO THE ABOVE LIMITATION OR EXCLUSION MAY NOT APPLY TO
+YOU. 
+
+If you have any questions about this License, please contact IDESKCENTRIC. 
+
+IDESKCENTRIC INC. 
+

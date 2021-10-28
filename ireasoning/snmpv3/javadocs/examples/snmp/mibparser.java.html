@@ -1,0 +1,279 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>mibparser (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002 iReasoning Networks. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Networks as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Networks.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="21"></A><FONT ID="Import">import</FONT> javax.swing.tree.*;
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.awt.*; 
+<A NAME="23"></A><FONT ID="Import">import</FONT> java.awt.event.*; 
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.event.*;
+<A NAME="25"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/util/package-summary.html">com.ireasoning.util.*</A>;
+<A NAME="27"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="28"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="29"></A>
+<A NAME="30"></A><FONT ID="FormalComment">/**
+<A NAME="31"></A> * This class demonstrates how to use MIB (SMIv1/v2) parser to parse MIB and display MIB tree in a GUI program.
+<A NAME="32"></A> * <font color=blue><b>Click <a href="http://www.ireasoning.com/products.shtml">here</a> for more information about iReasoning SNMP API.</b></font>
+<br>
+Output:<br>
+<img src="../../mibparser.gif">
+<A NAME="33"></A> */</FONT>
+<A NAME="34"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> mibparser 
+<A NAME="35"></A>{
+<A NAME="36"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)
+<A NAME="37"></A>    {
+<A NAME="38"></A>        <FONT ID="If">if</FONT>(args.length == <FONT ID="IntegerLiteral">0</FONT>)
+<A NAME="39"></A>        {
+<A NAME="40"></A>            System.out.println( <FONT ID="StringLiteral">"Usage: \njava mibparser mibFileName\njava mibparser mibFileNamesSeparatedByComma\njava mibparser directory"</FONT>);
+<A NAME="41"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="42"></A>        }
+<A NAME="43"></A>        String [] fileNames = <FONT ID="Null">null</FONT>;
+<A NAME="44"></A>        String fileName = args[<FONT ID="IntegerLiteral">0</FONT>];
+<A NAME="45"></A>        File file = <FONT ID="New">new</FONT> File(fileName);
+<A NAME="46"></A>        <FONT ID="If">if</FONT>(file.isDirectory())
+<A NAME="47"></A>        {<FONT ID="SingleLineComment">//Load whole directory
+<A NAME="48"></A></FONT>            File [] files = file.listFiles();
+<A NAME="49"></A>            ArrayList fileList = <FONT ID="New">new</FONT> ArrayList();
+<A NAME="50"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; files.length ; i++) 
+<A NAME="51"></A>            {
+<A NAME="52"></A>                <FONT ID="If">if</FONT>(files[i].isDirectory()) <FONT ID="Continue">continue</FONT>;
+<A NAME="53"></A>                fileList.add(files[i].getAbsolutePath());
+<A NAME="54"></A>            }
+<A NAME="55"></A>            fileNames = <FONT ID="New">new</FONT> String[fileList.size()];
+<A NAME="56"></A>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; fileNames.length ; i++) 
+<A NAME="57"></A>            {
+<A NAME="58"></A>                fileNames[i] = (String) fileList.get(i);
+<A NAME="59"></A>            }
+<A NAME="60"></A>        }
+<A NAME="61"></A>        <FONT ID="Else">else</FONT>
+<A NAME="62"></A>        {
+<A NAME="63"></A>            fileNames = parseFileNames(fileName);
+<A NAME="64"></A>        }
+<A NAME="65"></A>
+<A NAME="66"></A>        <A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A> node = <FONT ID="Null">null</FONT>;
+<A NAME="67"></A>        <FONT ID="Try">try</FONT>
+<A NAME="68"></A>        {
+<A NAME="69"></A>            <FONT ID="SingleLineComment">//lenient parsing
+<A NAME="70"></A></FONT>            node = MibUtil.parseMibs(fileNames, <FONT ID="False">false</FONT>);
+<A NAME="71"></A>        }
+<A NAME="72"></A>        <FONT ID="Catch">catch</FONT>(<A HREF="../..//com/ireasoning/util/MibParseException.html">MibParseException</A> me)
+<A NAME="73"></A>        {
+<A NAME="74"></A>            System.out.println( me);
+<A NAME="75"></A>            me.printStackTrace();
+<A NAME="76"></A>            System.out.println( <FONT ID="StringLiteral">"error module name:"</FONT> + me.getMibModuleName() );
+<A NAME="77"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="78"></A>        }
+<A NAME="79"></A>        <FONT ID="Catch">catch</FONT>(Exception e)
+<A NAME="80"></A>        {
+<A NAME="81"></A>            System.out.println( <FONT ID="StringLiteral">"Error occurs when loading MIB:"</FONT> + fileName);
+<A NAME="82"></A>            System.out.println( e);
+<A NAME="83"></A>            e.printStackTrace();
+<A NAME="84"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="85"></A>        }
+<A NAME="86"></A>        <FONT ID="SingleLineComment">//start to build DefaultMutableTreeNode, the simplest way is to use
+<A NAME="87"></A></FONT>        <FONT ID="SingleLineComment">//DefaultMutableTreeNode dn = node.toJTreeNode();
+<A NAME="88"></A></FONT>        <FONT ID="SingleLineComment">//But it does not have many info and not flexible
+<A NAME="89"></A></FONT> 
+<A NAME="90"></A>        <FONT ID="SingleLineComment">// print out trap nodes
+<A NAME="91"></A></FONT>        <FONT ID="SingleLineComment">// java.util.Vector v = node.getTrapNodes();
+<A NAME="92"></A></FONT>        <FONT ID="SingleLineComment">// int trapNodeCount = v.size();
+<A NAME="93"></A></FONT>        <FONT ID="SingleLineComment">// for (int i = 0; i &lt; trapNodeCount; i++)
+<A NAME="94"></A></FONT>        <FONT ID="SingleLineComment">// {
+<A NAME="95"></A></FONT>        <FONT ID="SingleLineComment">//     TrapNode tnode = (TrapNode) v.get(i);
+<A NAME="96"></A></FONT>        <FONT ID="SingleLineComment">//     System.out.println( tnode );
+<A NAME="97"></A></FONT>        <FONT ID="SingleLineComment">// }
+<A NAME="98"></A></FONT>        
+<A NAME="99"></A>        DefaultMutableTreeNode dn = convertToJTreeNode(node);
+<A NAME="100"></A>        JTree jtree = <FONT ID="New">new</FONT> JTree(dn)
+<A NAME="101"></A>        {
+<A NAME="102"></A>            <FONT ID="Public">public</FONT> String getToolTipText(MouseEvent evt) 
+<A NAME="103"></A>            {
+<A NAME="104"></A>                <FONT ID="If">if</FONT> (getRowForLocation(evt.getX(), evt.getY()) == -<FONT ID="IntegerLiteral">1</FONT>) <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;    
+<A NAME="105"></A>                TreePath curPath = getPathForLocation(evt.getX(), evt.getY());
+<A NAME="106"></A>                <FONT ID="Return">return</FONT> ((ToolTipTreeNode)curPath.getLastPathComponent()).getToolTipText();
+<A NAME="107"></A>            }
+<A NAME="108"></A>        };
+<A NAME="109"></A>        jtree.setToolTipText(<FONT ID="StringLiteral">""</FONT>);
+<A NAME="110"></A>        <FONT ID="Final">final</FONT> JTextArea nodeDetails = <FONT ID="New">new</FONT> JTextArea();
+<A NAME="111"></A>        nodeDetails.setEditable(<FONT ID="False">false</FONT>);
+<A NAME="112"></A>        
+<A NAME="113"></A>        TreeSelectionListener listener = <FONT ID="New">new</FONT> TreeSelectionListener() 
+<A NAME="114"></A>        {
+<A NAME="115"></A>            <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> valueChanged(TreeSelectionEvent e) 
+<A NAME="116"></A>            {
+<A NAME="117"></A>                <A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A> n = ((ToolTipTreeNode) e.getPath().getLastPathComponent()).getMibTreeNode();
+<A NAME="118"></A>                nodeDetails.setText(n.toString());
+<A NAME="119"></A>                nodeDetails.setCaretPosition(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="120"></A>            }
+<A NAME="121"></A>        };
+<A NAME="122"></A>        jtree.addTreeSelectionListener(listener);
+<A NAME="123"></A>        
+<A NAME="124"></A>        JSplitPane split = <FONT ID="New">new</FONT> JSplitPane(JSplitPane.VERTICAL_SPLIT, <FONT ID="New">new</FONT> JScrollPane(jtree), <FONT ID="New">new</FONT> JScrollPane(nodeDetails));
+<A NAME="125"></A>        split.setDividerSize(<FONT ID="IntegerLiteral">3</FONT>) ;
+<A NAME="126"></A>        split.setDividerLocation(<FONT ID="IntegerLiteral">400</FONT>);
+<A NAME="127"></A>        JFrame f = <FONT ID="New">new</FONT> JFrame();
+<A NAME="128"></A>        f.getContentPane().add(split, BorderLayout.CENTER);
+<A NAME="129"></A>        f.setSize(<FONT ID="IntegerLiteral">800</FONT>, <FONT ID="IntegerLiteral">600</FONT>);
+<A NAME="130"></A>        f.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="131"></A>        f.addWindowListener(<FONT ID="New">new</FONT> java.awt.event.WindowAdapter()
+<A NAME="132"></A>        {
+<A NAME="133"></A>            <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> windowClosing(java.awt.event.WindowEvent e)
+<A NAME="134"></A>            {
+<A NAME="135"></A>                System.exit(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="136"></A>            }
+<A NAME="137"></A>        });
+<A NAME="138"></A>
+<A NAME="139"></A>
+<A NAME="140"></A>        System.out.println( <FONT ID="StringLiteral">"********** Print out loaded MIB modules **********\r\n\r\n"</FONT>);
+<A NAME="141"></A>        Set info = MibUtil.getModulesInfo();
+<A NAME="142"></A>        Iterator it = info.iterator();
+<A NAME="143"></A>        <FONT ID="While">while</FONT>(it.hasNext())
+<A NAME="144"></A>        {
+<A NAME="145"></A>            <A HREF="../..//com/ireasoning/util/MibModuleData.html">MibModuleData</A> m = (<A HREF="../..//com/ireasoning/util/MibModuleData.html">MibModuleData</A>) it.next();
+<A NAME="146"></A>            System.out.println( <FONT ID="StringLiteral">"\r\n==========================================="</FONT>);
+<A NAME="147"></A>            System.out.println( m);
+<A NAME="148"></A>            Map imports = m.getImportsInfo();
+<A NAME="149"></A>            Set iset= imports.entrySet();
+<A NAME="150"></A>            Iterator eit = iset.iterator();
+<A NAME="151"></A>            <FONT ID="While">while</FONT>(eit.hasNext())
+<A NAME="152"></A>            {
+<A NAME="153"></A>                Map.Entry entry = (Map.Entry) eit.next();
+<A NAME="154"></A>                String imodule = (String) entry.getKey();
+<A NAME="155"></A>                HashSet nodes = (HashSet) entry.getValue();
+<A NAME="156"></A>                Iterator nodeIt = nodes.iterator();
+<A NAME="157"></A>                StringBuffer nodeBuf = <FONT ID="New">new</FONT> StringBuffer();
+<A NAME="158"></A>                <FONT ID="Boolean">boolean</FONT> isFirst = <FONT ID="True">true</FONT>;
+<A NAME="159"></A>                <FONT ID="While">while</FONT>(nodeIt.hasNext())
+<A NAME="160"></A>                {
+<A NAME="161"></A>                    <FONT ID="If">if</FONT>(!isFirst) 
+<A NAME="162"></A>                    {
+<A NAME="163"></A>                        nodeBuf.append(<FONT ID="StringLiteral">", "</FONT>);
+<A NAME="164"></A>                    }
+<A NAME="165"></A>                    nodeBuf.append(nodeIt.next());
+<A NAME="166"></A>                    isFirst =<FONT ID="False">false</FONT>;
+<A NAME="167"></A>                }
+<A NAME="168"></A>                System.out.println( <FONT ID="StringLiteral">"Import "</FONT> + nodeBuf + <FONT ID="StringLiteral">" from "</FONT> + imodule);
+<A NAME="169"></A>            }
+<A NAME="170"></A>        }
+<A NAME="171"></A>    }
+<A NAME="172"></A>
+<A NAME="173"></A>    <FONT ID="FormalComment">/**
+<A NAME="174"></A>     * Converts a MibTreeNode to DefaultMutableTreeNode in order to be able to used by JTree
+<A NAME="175"></A>     */</FONT>
+<A NAME="176"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> ToolTipTreeNode convertToJTreeNode(<A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A> node)
+<A NAME="177"></A>    {
+<A NAME="178"></A>        <FONT ID="Return">return</FONT> buildTree(node, <FONT ID="Null">null</FONT>);
+<A NAME="179"></A>    }
+<A NAME="180"></A>    
+<A NAME="181"></A>    <FONT ID="FormalComment">/**
+<A NAME="182"></A>     * Builds the tree recursively
+<A NAME="183"></A>     */</FONT>
+<A NAME="184"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> ToolTipTreeNode buildTree(<A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A> mibNode, ToolTipTreeNode node)
+<A NAME="185"></A>    {
+<A NAME="186"></A>        <FONT ID="If">if</FONT> (mibNode == <FONT ID="Null">null</FONT>)
+<A NAME="187"></A>        {
+<A NAME="188"></A>            <FONT ID="Return">return</FONT> <FONT ID="Null">null</FONT>;
+<A NAME="189"></A>        }
+<A NAME="190"></A>        <FONT ID="If">if</FONT>(node == <FONT ID="Null">null</FONT>)
+<A NAME="191"></A>        {
+<A NAME="192"></A>            node = <FONT ID="New">new</FONT> ToolTipTreeNode(mibNode.getName().toString(), mibNode, getNodeTip(mibNode));
+<A NAME="193"></A>        }
+<A NAME="194"></A>
+<A NAME="195"></A>        <A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A> n = (<A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A>) mibNode.getFirstChild();
+<A NAME="196"></A>        <FONT ID="While">while</FONT>(n != <FONT ID="Null">null</FONT>)
+<A NAME="197"></A>        {
+<A NAME="198"></A>            ToolTipTreeNode child = <FONT ID="New">new</FONT> ToolTipTreeNode(n.getName().toString(), n, getNodeTip(n)); 
+<A NAME="199"></A>            node.add(child);
+<A NAME="200"></A>            buildTree(n, child);
+<A NAME="201"></A>            n = (<A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A>) n.getNextSibling();
+<A NAME="202"></A>        }              
+<A NAME="203"></A>        <FONT ID="Return">return</FONT> node;
+<A NAME="204"></A>    } 
+<A NAME="205"></A>
+<A NAME="206"></A>    <FONT ID="Private">private</FONT> <FONT ID="Static">static</FONT> String getNodeTip(<A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A> node)
+<A NAME="207"></A>    {
+<A NAME="208"></A>        String tip = node.getOID().toString();
+<A NAME="209"></A>        String syntax = node.getSyntaxType();
+<A NAME="210"></A>        <FONT ID="If">if</FONT>(syntax != <FONT ID="Null">null</FONT>)
+<A NAME="211"></A>        {
+<A NAME="212"></A>            tip += <FONT ID="StringLiteral">", type:"</FONT> + syntax;
+<A NAME="213"></A>        }
+<A NAME="214"></A>        <FONT ID="Else">else</FONT>
+<A NAME="215"></A>        {
+<A NAME="216"></A>            <FONT ID="If">if</FONT>(node.isSnmpV2TrapNode())
+<A NAME="217"></A>            {
+<A NAME="218"></A>                tip += <FONT ID="StringLiteral">", SNMPv2 Trap Node"</FONT>;
+<A NAME="219"></A>            }
+<A NAME="220"></A>        }
+<A NAME="221"></A>        <FONT ID="Return">return</FONT> tip;
+<A NAME="222"></A>    }
+<A NAME="223"></A>    
+<A NAME="224"></A>    <FONT ID="Static">static</FONT> <FONT ID="Class">class</FONT> ToolTipTreeNode <FONT ID="Extends">extends</FONT> DefaultMutableTreeNode 
+<A NAME="225"></A>    {
+<A NAME="226"></A>        <FONT ID="Private">private</FONT> String toolTipText;
+<A NAME="227"></A>        <FONT ID="Private">private</FONT> <A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A> mibTreeNode;
+<A NAME="228"></A>
+<A NAME="229"></A>        <FONT ID="Public">public</FONT> ToolTipTreeNode(String str, <A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A> node, String toolTipText) 
+<A NAME="230"></A>        {
+<A NAME="231"></A>            <FONT ID="Super">super</FONT>(str);
+<A NAME="232"></A>            <FONT ID="This">this</FONT>.mibTreeNode = node;
+<A NAME="233"></A>            <FONT ID="This">this</FONT>.toolTipText = toolTipText;
+<A NAME="234"></A>        }
+<A NAME="235"></A>
+<A NAME="236"></A>        <FONT ID="Public">public</FONT> String getToolTipText() 
+<A NAME="237"></A>        {
+<A NAME="238"></A>            <FONT ID="Return">return</FONT> toolTipText;
+<A NAME="239"></A>        }
+<A NAME="240"></A>
+<A NAME="241"></A>        <FONT ID="Public">public</FONT> <A HREF="../..//com/ireasoning/util/MibTreeNode.html">MibTreeNode</A> getMibTreeNode()
+<A NAME="242"></A>        {
+<A NAME="243"></A>            <FONT ID="Return">return</FONT> mibTreeNode;
+<A NAME="244"></A>        }
+<A NAME="245"></A>    } 
+<A NAME="246"></A>
+<A NAME="247"></A>    <FONT ID="FormalComment">/**
+<A NAME="248"></A>     * Tokonized passed fileNames
+<A NAME="249"></A>     * @param fileNames file names separated by comma or semicolon
+<A NAME="250"></A>     */</FONT>
+<A NAME="251"></A>    <FONT ID="Static">static</FONT> String[] parseFileNames(String fileNames)
+<A NAME="252"></A>    {
+<A NAME="253"></A>        java.util.StringTokenizer st = <FONT ID="New">new</FONT> java.util.StringTokenizer(fileNames, <FONT ID="StringLiteral">",;"</FONT>);
+<A NAME="254"></A>        String [] ret = <FONT ID="New">new</FONT> String[ st.countTokens() ];
+<A NAME="255"></A>        <FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>;
+<A NAME="256"></A>        <FONT ID="While">while</FONT> (st.hasMoreTokens()) 
+<A NAME="257"></A>        {
+<A NAME="258"></A>            ret[i++] = st.nextToken();
+<A NAME="259"></A>        }
+<A NAME="260"></A> 
+<A NAME="261"></A>        <FONT ID="Return">return</FONT> ret;
+<A NAME="262"></A>    }
+<A NAME="263"></A>}<FONT ID="SingleLineComment">// end of class mibparser
+<A NAME="264"></A></FONT>
+<A NAME="265"></A>
+<A NAME="266"></A></pre>
+</BODY>
+</HTML>

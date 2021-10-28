@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>snmpwalk (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002 iReasoning Networks. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Networks as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Networks.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/Listener.html">com.ireasoning.protocol.Listener</A>;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/Msg.html">com.ireasoning.protocol.Msg</A>;
+<A NAME="24"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/TimeoutException.html">com.ireasoning.protocol.TimeoutException</A>;
+<A NAME="25"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="26"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">com.ireasoning.util.ParseArguments</A>;
+<A NAME="27"></A><FONT ID="Import">import</FONT> java.io.IOException;
+<A NAME="28"></A>
+<A NAME="29"></A><FONT ID="FormalComment">/**
+<A NAME="30"></A> * This class demonstrates three different implementations of snmp walk. 
+<A NAME="31"></A> * &lt;br&gt;
+<A NAME="32"></A> * walk1() demonstrates use of SnmpSession.snmpWalk to implement snmp (simplest
+<A NAME="33"></A> * way) &lt;br&gt;
+<A NAME="34"></A> * walk2() demonstrates use of SnmpSession.snmpGetNextRequest to implement snmp
+<A NAME="35"></A> * walk&lt;br&gt;
+<A NAME="36"></A> * walk3() demonstrates use of primitive SnmpSession.send to implement
+<A NAME="37"></A> * snmp walk&lt;br&gt;
+<A NAME="38"></A> * &lt;pre&gt;
+<A NAME="39"></A> * Example:
+<A NAME="40"></A> * java snmpwalk localhost .1.3
+<A NAME="41"></A> * java snmpwalk localhost
+<A NAME="42"></A> * java snmpwalk localhost -v 3 -u newUser -A abc12345 -X abc12345 .1.3
+<A NAME="43"></A> *  
+<A NAME="44"></A> * &lt;/pre&gt;
+<A NAME="45"></A> */</FONT>
+<A NAME="46"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> snmpwalk <FONT ID="Extends">extends</FONT> <A HREF="snmp.java.html">snmp</A> <FONT ID="Implements">implements</FONT> <A HREF="../..//com/ireasoning/protocol/Listener.html">Listener</A>
+<A NAME="47"></A>{
+<A NAME="48"></A>    <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> _walkMethod = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="49"></A>    
+<A NAME="50"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)
+<A NAME="51"></A>    {
+<A NAME="52"></A>        <A HREF="snmpwalk.java.html">snmpwalk</A> s = <FONT ID="New">new</FONT> <A HREF="snmpwalk.java.html">snmpwalk</A>();
+<A NAME="53"></A>        s.parseOptions(args, <FONT ID="StringLiteral">"snmpwalk"</FONT>, <FONT ID="False">false</FONT>, <FONT ID="False">false</FONT>);
+<A NAME="54"></A>        <FONT ID="SingleLineComment">// s.printOptions();
+<A NAME="55"></A></FONT>
+<A NAME="56"></A>        <FONT ID="SingleLineComment">// starting to walk...
+<A NAME="57"></A></FONT>       
+<A NAME="58"></A>        <FONT ID="If">if</FONT>(_walkMethod == <FONT ID="IntegerLiteral">1</FONT>)
+<A NAME="59"></A>        {<FONT ID="SingleLineComment">// use SnmpSession.snmpWalk
+<A NAME="60"></A></FONT>            s.walk1();
+<A NAME="61"></A>        }
+<A NAME="62"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(_walkMethod == <FONT ID="IntegerLiteral">2</FONT>)
+<A NAME="63"></A>        {<FONT ID="SingleLineComment">// use SnmpSession.snmpGetNextRequest
+<A NAME="64"></A></FONT>            s.walk2();
+<A NAME="65"></A>        }
+<A NAME="66"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(_walkMethod == <FONT ID="IntegerLiteral">3</FONT>)
+<A NAME="67"></A>        {<FONT ID="SingleLineComment">// use SnmpSession.send
+<A NAME="68"></A></FONT>            s.walk3();
+<A NAME="69"></A>        }
+<A NAME="70"></A>    }
+<A NAME="71"></A>    
+<A NAME="72"></A>    <FONT ID="FormalComment">/**
+<A NAME="73"></A>     * This method demonstrates use of SnmpSession.snmpWalk to implement snmp
+<A NAME="74"></A>     * walk. It's the simplest way to do snmp walk.
+<A NAME="75"></A>     * @see #handleMsg
+<A NAME="76"></A>     */</FONT>
+<A NAME="77"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> walk1()
+<A NAME="78"></A>    {
+<A NAME="79"></A>        <FONT ID="Try">try</FONT>
+<A NAME="80"></A>        {
+<A NAME="81"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(_host, _port, _community,
+<A NAME="82"></A>                    _community, _version, _transportLayer);
+<A NAME="83"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="84"></A>            {
+<A NAME="85"></A>                session.setV3Params(_user, _authProtocol, _authPassword,
+<A NAME="86"></A>                               _privProtocol, _privPassword, _context, <FONT ID="Null">null</FONT>);
+<A NAME="87"></A>            }
+<A NAME="88"></A>            session.snmpWalk(_oids[<FONT ID="IntegerLiteral">0</FONT>], <FONT ID="This">this</FONT>);
+<A NAME="89"></A>        }
+<A NAME="90"></A>        <FONT ID="Catch">catch</FONT>(<A HREF="../..//com/ireasoning/protocol/TimeoutException.html">TimeoutException</A> timeout)
+<A NAME="91"></A>        {
+<A NAME="92"></A>            System.out.println( <FONT ID="StringLiteral">"time out"</FONT>);
+<A NAME="93"></A>        }
+<A NAME="94"></A>        <FONT ID="Catch">catch</FONT>(IOException ie)
+<A NAME="95"></A>        {
+<A NAME="96"></A>            System.out.println(ie);
+<A NAME="97"></A>            ie.printStackTrace();
+<A NAME="98"></A>        }
+<A NAME="99"></A>        <FONT ID="Catch">catch</FONT>(<A HREF="../..//com/ireasoning/protocol/TimeoutException.html">Exception</A> e)
+<A NAME="100"></A>        {
+<A NAME="101"></A>            System.out.println(e);
+<A NAME="102"></A>            e.printStackTrace();
+<A NAME="103"></A>        }
+<A NAME="104"></A>    }
+<A NAME="105"></A>    
+<A NAME="106"></A>    <FONT ID="FormalComment">/**
+<A NAME="107"></A>     * Callback method. walk1() will indirectly invoke this method.
+<A NAME="108"></A>     */</FONT>
+<A NAME="109"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> handleMsg(Object session, <A HREF="../..//com/ireasoning/protocol/Msg.html">Msg</A> msg)
+<A NAME="110"></A>    {
+<A NAME="111"></A>        <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> pdu = (<A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A>) msg;
+<A NAME="112"></A>        <FONT ID="If">if</FONT>(pdu.getErrorStatus() != <FONT ID="IntegerLiteral">0</FONT>)
+<A NAME="113"></A>        {
+<A NAME="114"></A>            System.out.println( <FONT ID="StringLiteral">"Error: "</FONT> + SnmpErrorStatus.ERR_STRINGS[pdu.getErrorStatus()] );
+<A NAME="115"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="116"></A>        }
+<A NAME="117"></A>        <FONT ID="If">if</FONT>(pdu.isSnmpV3AuthenticationFailed())
+<A NAME="118"></A>        {
+<A NAME="119"></A>            System.out.println( <FONT ID="StringLiteral">"Authentication failed"</FONT>);
+<A NAME="120"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="121"></A>        }
+<A NAME="122"></A>        <FONT ID="If">if</FONT>(!pdu.hasMore())
+<A NAME="123"></A>        {
+<A NAME="124"></A>            System.out.println( <FONT ID="StringLiteral">"&lt;End of MIB View Reached&gt;"</FONT>);
+<A NAME="125"></A>            ((<A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>)session).close();
+<A NAME="126"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="127"></A>        }
+<A NAME="128"></A>
+<A NAME="129"></A>        print(pdu);
+<A NAME="130"></A>    }
+<A NAME="131"></A>    
+<A NAME="132"></A>    <FONT ID="FormalComment">/**
+<A NAME="133"></A>     * This method demonstrates use of SnmpSession.snmpGetNextRequest to implement snmp
+<A NAME="134"></A>     * walk
+<A NAME="135"></A>     */</FONT>
+<A NAME="136"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> walk2()
+<A NAME="137"></A>    {
+<A NAME="138"></A>        <FONT ID="Try">try</FONT>
+<A NAME="139"></A>        {
+<A NAME="140"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpTarget.html">SnmpTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpTarget.html">SnmpTarget</A>(_host, _port, _community, _community, _version);
+<A NAME="141"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(target, _transportLayer);
+<A NAME="142"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="143"></A>            {
+<A NAME="144"></A>                session.setV3Params(_user, _authProtocol, _authPassword,
+<A NAME="145"></A>                                    _privProtocol, _privPassword, _context, <FONT ID="Null">null</FONT>);
+<A NAME="146"></A>            }
+<A NAME="147"></A>            
+<A NAME="148"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> retPdu = session.snmpGetNextRequest(_oids[<FONT ID="IntegerLiteral">0</FONT>]);
+<A NAME="149"></A>            <FONT ID="If">if</FONT>(!retPdu.hasMore())
+<A NAME="150"></A>            {
+<A NAME="151"></A>                System.out.println(<FONT ID="StringLiteral">"End of mib view reached"</FONT>);
+<A NAME="152"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="153"></A>            }
+<A NAME="154"></A>
+<A NAME="155"></A>            print(retPdu);
+<A NAME="156"></A>            
+<A NAME="157"></A>            <FONT ID="While">while</FONT> (<FONT ID="True">true</FONT>)
+<A NAME="158"></A>            {
+<A NAME="159"></A>                retPdu = session.snmpGetNextRequest(retPdu.getFirstVarBind().getName());
+<A NAME="160"></A>                <FONT ID="If">if</FONT>(!retPdu.hasMore())
+<A NAME="161"></A>                {
+<A NAME="162"></A>                    System.out.println(<FONT ID="StringLiteral">"End of mib view reached"</FONT>);
+<A NAME="163"></A>                    <FONT ID="Break">break</FONT>;
+<A NAME="164"></A>                }
+<A NAME="165"></A>                print(retPdu);
+<A NAME="166"></A>            }
+<A NAME="167"></A>            session.close();
+<A NAME="168"></A>        }
+<A NAME="169"></A>        <FONT ID="Catch">catch</FONT>(<A HREF="../..//com/ireasoning/protocol/TimeoutException.html">Exception</A> e)
+<A NAME="170"></A>        {
+<A NAME="171"></A>            System.out.println(e);
+<A NAME="172"></A>            e.printStackTrace();
+<A NAME="173"></A>        }
+<A NAME="174"></A>    }
+<A NAME="175"></A>
+<A NAME="176"></A>    <FONT ID="FormalComment">/**
+<A NAME="177"></A>     * This method demonstrates use of primitive SnmpSession.send to implement
+<A NAME="178"></A>     * snmp walk
+<A NAME="179"></A>     */</FONT>
+<A NAME="180"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> walk3()
+<A NAME="181"></A>    {
+<A NAME="182"></A>        <FONT ID="Try">try</FONT>
+<A NAME="183"></A>        {
+<A NAME="184"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpTarget.html">SnmpTarget</A> target = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpTarget.html">SnmpTarget</A>(_host, _port, _community, _community);
+<A NAME="185"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(target, _transportLayer);
+<A NAME="186"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="187"></A>            {
+<A NAME="188"></A>                session.setV3Params(_user, _authProtocol, _authPassword, _privProtocol, _privPassword, _context, <FONT ID="Null">null</FONT>);
+<A NAME="189"></A>            }
+<A NAME="190"></A>            
+<A NAME="191"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A>[]  vblist = { <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A>(_oids[<FONT ID="IntegerLiteral">0</FONT>]) };
+<A NAME="192"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> pdu = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A>(SnmpConst.GET_NEXT, vblist);
+<A NAME="193"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> retPdu = <FONT ID="Null">null</FONT>;
+<A NAME="194"></A>            retPdu = session.send(pdu);
+<A NAME="195"></A>            <FONT ID="If">if</FONT>(!retPdu.hasMore())
+<A NAME="196"></A>            {
+<A NAME="197"></A>                System.out.println(<FONT ID="StringLiteral">"End of mib view reached"</FONT>);
+<A NAME="198"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="199"></A>            }
+<A NAME="200"></A>
+<A NAME="201"></A>            print(retPdu);
+<A NAME="202"></A>
+<A NAME="203"></A>            <FONT ID="While">while</FONT> (<FONT ID="True">true</FONT>)
+<A NAME="204"></A>            {
+<A NAME="205"></A>                pdu.setOID(retPdu.getFirstVarBind().getName());
+<A NAME="206"></A>                retPdu = session.send(pdu);
+<A NAME="207"></A>                <FONT ID="If">if</FONT>(!retPdu.hasMore())
+<A NAME="208"></A>                {
+<A NAME="209"></A>                    System.out.println(<FONT ID="StringLiteral">"End of mib view reached"</FONT>);
+<A NAME="210"></A>                    <FONT ID="Break">break</FONT>;
+<A NAME="211"></A>                }
+<A NAME="212"></A>                print(retPdu);
+<A NAME="213"></A>            }
+<A NAME="214"></A>            session.close();
+<A NAME="215"></A>        }
+<A NAME="216"></A>        <FONT ID="Catch">catch</FONT>(<A HREF="../..//com/ireasoning/protocol/TimeoutException.html">Exception</A> e)
+<A NAME="217"></A>        {
+<A NAME="218"></A>            System.out.println(e);
+<A NAME="219"></A>            e.printStackTrace();
+<A NAME="220"></A>        }
+<A NAME="221"></A>    }
+<A NAME="222"></A>
+<A NAME="223"></A>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="224"></A></FONT>    <FONT ID="SingleLineComment">// Parsing command line options
+<A NAME="225"></A></FONT>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="226"></A></FONT>    
+<A NAME="227"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> moreOptions()
+<A NAME="228"></A>    {
+<A NAME="229"></A>        System.out.println( <FONT ID="StringLiteral">"-w {1|2|3} which walk method to use, default is 1"</FONT>);
+<A NAME="230"></A>    }
+<A NAME="231"></A>    
+<A NAME="232"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> parseOptions(String[] args, 
+<A NAME="233"></A>                                String programName, 
+<A NAME="234"></A>                                <FONT ID="Boolean">boolean</FONT> allowMultipleOIDs,
+<A NAME="235"></A>                                <FONT ID="Boolean">boolean</FONT> allowNoOption)
+<A NAME="236"></A>    {
+<A NAME="237"></A>        <FONT ID="Super">super</FONT>.parseOptions(args, programName, allowMultipleOIDs, allowNoOption);
+<A NAME="238"></A>        _walkMethod = Integer.parseInt(_parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'w'</FONT>, <FONT ID="StringLiteral">"1"</FONT>));
+<A NAME="239"></A>    }
+<A NAME="240"></A>
+<A NAME="241"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printMoreOptions()
+<A NAME="242"></A>    {
+<A NAME="243"></A>        System.out.println( <FONT ID="StringLiteral">"walk-method =\t\t"</FONT> + _walkMethod);
+<A NAME="244"></A>    }
+<A NAME="245"></A>
+<A NAME="246"></A>    <FONT ID="FormalComment">/**
+<A NAME="247"></A>     * Creates a new instance of ParseArguments
+<A NAME="248"></A>     */</FONT>
+<A NAME="249"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A> newParseArgumentsInstance(String[] args)
+<A NAME="250"></A>    {
+<A NAME="251"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A>(args, <FONT ID="StringLiteral">"?ho"</FONT>, <FONT ID="StringLiteral">"utvaAXxcpmnrwk"</FONT>);
+<A NAME="252"></A>    }
+<A NAME="253"></A>    
+<A NAME="254"></A>}<FONT ID="SingleLineComment">// end of class snmpwalk 
+<A NAME="255"></A></FONT></pre>
+</BODY>
+</HTML>

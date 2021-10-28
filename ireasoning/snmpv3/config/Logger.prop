@@ -1,0 +1,43 @@
+###   LOGGER CONFIGURATION FILE ###
+
+#logging level, Possible values are { debug, info, warn, error, fatal, none} (case insensitive)
+#none: no logging at all ; fatal: only log fatal errors ; ... ; debug: verbose, log a lot
+level=info
+
+# The output print stream for INFO level logging. 
+# Possible values are stdout, stderr, or fileName(path can be supplied).
+# If on windows, the backslash in path should be replaced with double backslash. For example
+# "C:\\log\\log.txt" should be used for "C:\log\log.txt".
+# Or use forward slash such as  "c:/log/log.txt"
+info_stream=stdout
+
+
+#The output print stream for DEBUG level logging. 
+#Possible values are stdout, stderr, or fileName(path can be supplied).
+# If on windows, the backslash in path should be replaced with double backslash. For example
+# "C:\\log\\log.txt" should be used for "C:\log\log.txt".
+# Or use forward slash such as  "c:/log/log.txt"
+debug_stream=stdout
+
+#The output print stream for WARN level logging. 
+#Possible values are stdout, stderr, or fileName(path can be supplied).
+# If on windows, the backslash in path should be replaced with double backslash. For example
+# "C:\\log\\log.txt" should be used for "C:\log\log.txt".
+# Or use forward slash such as  "c:/log/log.txt"
+warn_stream=stdout
+
+#The output print stream for ERROR level logging. 
+#Possible values are stdout, stderr, or fileName(path can be supplied).
+# If on windows, the backslash in path should be replaced with double backslash. For example
+# "C:\\log\\log.txt" should be used for "C:\log\log.txt".
+# Or use forward slash such as  "c:/log/log.txt"
+error_stream=stdout
+
+
+#The output print stream for FATAL level logging. 
+#Possible values are stdout, stderr, or fileName(path can be supplied).
+# If on windows, the backslash in path should be replaced with double backslash. For example
+# "C:\\log\\log.txt" should be used for "C:\log\log.txt".
+# Or use forward slash such as  "c:/log/log.txt"
+fatal_stream=stdout
+

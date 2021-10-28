@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>tl1asyncsend (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002-2003 iReasoning Inc. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Inc. as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Inc.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A><FONT ID="Import">import</FONT> java.io.*;
+<A NAME="22"></A><FONT ID="Import">import</FONT> java.util.*;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/util/package-summary.html">com.ireasoning.util.*</A>;
+<A NAME="24"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/package-summary.html">com.ireasoning.protocol.*</A>;
+<A NAME="25"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/tl1/package-summary.html">com.ireasoning.protocol.tl1.*</A>;
+<A NAME="26"></A>
+<A NAME="27"></A><FONT ID="FormalComment">/**
+<A NAME="28"></A> * This class demonstrates asynchronously sending TL1 command. It implements a
+<A NAME="29"></A> * callback Listener interface. TL1Session will call handleMsg(...) method upon
+<A NAME="30"></A> * receiving TL1 response message.
+<A NAME="31"></A> */</FONT>
+<A NAME="32"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> tl1asyncsend <FONT ID="Implements">implements</FONT> <A HREF="../..//com/ireasoning/protocol/Listener.html">Listener</A>
+<A NAME="33"></A>{
+<A NAME="34"></A>    <FONT ID="FormalComment">/**
+<A NAME="35"></A>     * Callback method, to be called when there is new message
+<A NAME="36"></A>     */</FONT>
+<A NAME="37"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> handleMsg(Object msgSender, <A HREF="../..//com/ireasoning/protocol/Msg.html">Msg</A> msg)
+<A NAME="38"></A>    {
+<A NAME="39"></A>        <A HREF="../..//com/ireasoning/protocol/tl1/TL1OutputMsg.html">TL1OutputMsg</A> tl1msg = (<A HREF="../..//com/ireasoning/protocol/tl1/TL1OutputMsg.html">TL1OutputMsg</A>) msg;
+<A NAME="40"></A>        print(<FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/tl1/TL1OutputMsg.html">TL1OutputMsg</A>[]{tl1msg});
+<A NAME="41"></A>    }
+<A NAME="42"></A>    
+<A NAME="43"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)  
+<A NAME="44"></A>    {
+<A NAME="45"></A>        <A HREF="tl1asyncsend.java.html">tl1asyncsend</A> test = <FONT ID="New">new</FONT> <A HREF="tl1asyncsend.java.html">tl1asyncsend</A>();
+<A NAME="46"></A>        <FONT ID="Try">try</FONT>
+<A NAME="47"></A>        {
+<A NAME="48"></A>            String hostname = <FONT ID="StringLiteral">"localhost"</FONT>;
+<A NAME="49"></A>            <FONT ID="Int">int</FONT> port = <FONT ID="IntegerLiteral">9000</FONT>;
+<A NAME="50"></A>            System.out.println( <FONT ID="StringLiteral">"login to "</FONT> + hostname + <FONT ID="StringLiteral">":"</FONT> + port);
+<A NAME="51"></A>
+<A NAME="52"></A>            <A HREF="../..//com/ireasoning/protocol/tl1/TL1Session.html">TL1Session</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/tl1/TL1Session.html">TL1Session</A>(hostname, port);
+<A NAME="53"></A>            session.addListener(test);
+<A NAME="54"></A>            <A HREF="../..//com/ireasoning/protocol/tl1/TL1Command.html">TL1Command</A> req = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/tl1/TL1Command.html">TL1Command</A>();
+<A NAME="55"></A>
+<A NAME="56"></A>            req = TL1Command.act_user(<FONT ID="StringLiteral">"abc"</FONT>, <FONT ID="StringLiteral">"123"</FONT>);
+<A NAME="57"></A>            <FONT ID="SingleLineComment">//synchronously send login command
+<A NAME="58"></A></FONT>            session.send(req);
+<A NAME="59"></A>
+<A NAME="60"></A>            <FONT ID="SingleLineComment">//asynchronously send command
+<A NAME="61"></A></FONT>            req.setCommand(<FONT ID="StringLiteral">"rtrv-eqpt:NodeA:SLOT-ALL:123;"</FONT>);
+<A NAME="62"></A>            session.asyncSend(req);
+<A NAME="63"></A>
+<A NAME="64"></A>            req.setCommand(<FONT ID="StringLiteral">"rtrv-inv:NodeA:SLOT-ALL:123;"</FONT>);
+<A NAME="65"></A>            session.asyncSend(req);
+<A NAME="66"></A>
+<A NAME="67"></A>            <FONT ID="SingleLineComment">//program wont exit, since there 's another thread running
+<A NAME="68"></A></FONT>        }
+<A NAME="69"></A>        <FONT ID="Catch">catch</FONT>(Exception e)
+<A NAME="70"></A>        {
+<A NAME="71"></A>            System.out.println( e);
+<A NAME="72"></A>            e.printStackTrace();
+<A NAME="73"></A>        }
+<A NAME="74"></A>    }
+<A NAME="75"></A>
+<A NAME="76"></A>    <FONT ID="FormalComment">/**
+<A NAME="77"></A>     * Prints out response messages
+<A NAME="78"></A>     */</FONT>
+<A NAME="79"></A>    <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> print(<A HREF="../..//com/ireasoning/protocol/tl1/TL1OutputMsg.html">TL1OutputMsg</A>[] ms)
+<A NAME="80"></A>    {
+<A NAME="81"></A>        TL1Util.printOutputMsg(ms);
+<A NAME="82"></A>    }
+<A NAME="83"></A>}<FONT ID="SingleLineComment">//end of class tl1asyncsend
+<A NAME="84"></A></FONT>
+<A NAME="85"></A>
+<A NAME="86"></A></pre>
+</BODY>
+</HTML>

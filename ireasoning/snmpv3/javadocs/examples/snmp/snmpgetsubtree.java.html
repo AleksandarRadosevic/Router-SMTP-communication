@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>snmpgetsubtree (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002 iReasoning Networks. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Networks as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Networks.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/package-summary.html">com.ireasoning.protocol.*</A>;
+<A NAME="23"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="24"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">com.ireasoning.util.ParseArguments</A>;
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="FormalComment">/**
+<A NAME="27"></A> * This class demonstrates two different implementations of SNMP GET_SUBTREE operation. 
+<A NAME="28"></A> * &lt;br&gt;
+<A NAME="29"></A> * 1. Use "void SnmpSession.snmpGetSubtree(String startingOID, Listener callback)"
+<A NAME="30"></A> * &lt;br&gt;
+<A NAME="31"></A> * 2. Use synchronous "SnmpVarBind [] SnmpSession.snmpGetSubtree(String startingOID)"
+<A NAME="32"></A> * &lt;pre&gt;
+<A NAME="33"></A> * Example:
+<A NAME="34"></A> * java snmpgetsubtree localhost .1.3.6.1.2.1.2.2.1
+<A NAME="35"></A> * java snmpgetsubtree localhost iftable
+<A NAME="36"></A> * java snmpgetsubtree localhost ifTable
+<A NAME="37"></A> * java snmpgetsubtree localhost system
+<A NAME="38"></A> * java snmpgetsubtree -o localhost ipRouteTable
+<A NAME="39"></A> * java snmpgetsubtree localhost mib-2
+<A NAME="40"></A> * 
+<A NAME="41"></A> * &lt;/pre&gt;
+<A NAME="42"></A> */</FONT>
+<A NAME="43"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> snmpgetsubtree  <FONT ID="Extends">extends</FONT> <A HREF="snmp.java.html">snmp</A>  <FONT ID="Implements">implements</FONT> <A HREF="../..//com/ireasoning/protocol/Listener.html">Listener</A>
+<A NAME="44"></A>{
+<A NAME="45"></A>    <FONT ID="Static">static</FONT> <FONT ID="Int">int</FONT> _method = <FONT ID="IntegerLiteral">1</FONT>;
+<A NAME="46"></A>
+<A NAME="47"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)
+<A NAME="48"></A>    {
+<A NAME="49"></A>        <A HREF="snmpgetsubtree.java.html">snmpgetsubtree</A> s = <FONT ID="New">new</FONT> <A HREF="snmpgetsubtree.java.html">snmpgetsubtree</A>();
+<A NAME="50"></A>        s.parseOptions(args, <FONT ID="StringLiteral">"snmpgetsubtree"</FONT>);
+<A NAME="51"></A>        <FONT ID="SingleLineComment">// s.printOptions();
+<A NAME="52"></A></FONT>
+<A NAME="53"></A>       
+<A NAME="54"></A>        <FONT ID="If">if</FONT>(_method == <FONT ID="IntegerLiteral">1</FONT>)
+<A NAME="55"></A>        {<FONT ID="SingleLineComment">// By default, use SnmpSession.snmpGetSubtree(startingOID, callback)
+<A NAME="56"></A></FONT>            s.getSubtree1();
+<A NAME="57"></A>        }
+<A NAME="58"></A>        <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(_method == <FONT ID="IntegerLiteral">2</FONT>)
+<A NAME="59"></A>        {<FONT ID="SingleLineComment">// use synchronous SnmpSession.snmpGetSubtree
+<A NAME="60"></A></FONT>            s.getSubtree2();
+<A NAME="61"></A>        }
+<A NAME="62"></A>    }
+<A NAME="63"></A>    
+<A NAME="64"></A>    <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> handleMsg(Object session, <A HREF="../..//com/ireasoning/protocol/Msg.html">Msg</A> msg)
+<A NAME="65"></A>    {
+<A NAME="66"></A>        <A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A> pdu = (<A HREF="../..//com/ireasoning/protocol/snmp/SnmpPdu.html">SnmpPdu</A>) msg;
+<A NAME="67"></A>        <FONT ID="If">if</FONT>(pdu.isSnmpV3AuthenticationFailed())
+<A NAME="68"></A>        {
+<A NAME="69"></A>            System.out.println( <FONT ID="StringLiteral">"AuthFailed"</FONT>);
+<A NAME="70"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="71"></A>        }
+<A NAME="72"></A>        <FONT ID="If">if</FONT>(!pdu.hasMore())
+<A NAME="73"></A>        {
+<A NAME="74"></A>            System.out.println( <FONT ID="StringLiteral">"&lt;End of Subtree Reached&gt;"</FONT>);
+<A NAME="75"></A>            ((<A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>)session).close();
+<A NAME="76"></A>            <FONT ID="Return">return</FONT>;
+<A NAME="77"></A>        }
+<A NAME="78"></A>        print(pdu);
+<A NAME="79"></A>    }
+<A NAME="80"></A>    
+<A NAME="81"></A>    <FONT ID="FormalComment">/**
+<A NAME="82"></A>     * Use callback mechanism, handleMsg will be called by SnmpSession
+<A NAME="83"></A>     */</FONT>
+<A NAME="84"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> getSubtree1()
+<A NAME="85"></A>    {
+<A NAME="86"></A>        <FONT ID="Try">try</FONT>
+<A NAME="87"></A>        {
+<A NAME="88"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(_host, _port, _community,
+<A NAME="89"></A>                    _community, _version, _transportLayer);
+<A NAME="90"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="91"></A>            {
+<A NAME="92"></A>                session.setV3Params(_user, _authProtocol, _authPassword, _privProtocol, _privPassword, _context, <FONT ID="Null">null</FONT>);
+<A NAME="93"></A>            }
+<A NAME="94"></A>            session.snmpGetSubtree(_oids[<FONT ID="IntegerLiteral">0</FONT>], <FONT ID="This">this</FONT>);
+<A NAME="95"></A>        }
+<A NAME="96"></A>        <FONT ID="Catch">catch</FONT>(Exception e)
+<A NAME="97"></A>        {
+<A NAME="98"></A>            System.out.println(e);
+<A NAME="99"></A>            e.printStackTrace();
+<A NAME="100"></A>        }
+<A NAME="101"></A>    }
+<A NAME="102"></A>    
+<A NAME="103"></A>    <FONT ID="FormalComment">/**
+<A NAME="104"></A>     * Use synchronous SnmpSession.snmpGetSubtree method
+<A NAME="105"></A>     */</FONT>
+<A NAME="106"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> getSubtree2()
+<A NAME="107"></A>    {
+<A NAME="108"></A>        <FONT ID="Try">try</FONT>
+<A NAME="109"></A>        {
+<A NAME="110"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(_host, _port, _community,
+<A NAME="111"></A>                    _community, _version, _transportLayer);
+<A NAME="112"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="113"></A>            {
+<A NAME="114"></A>                session.setV3Params(_user, _authProtocol, _authPassword, _privProtocol, _privPassword, _context, <FONT ID="Null">null</FONT>);
+<A NAME="115"></A>            }
+<A NAME="116"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpError.html">SnmpError</A> error = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpError.html">SnmpError</A>();
+<A NAME="117"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpVarBind.html">SnmpVarBind</A>[]  varbinds = session.snmpGetSubtree(_oids[<FONT ID="IntegerLiteral">0</FONT>], error);
+<A NAME="118"></A>            <FONT ID="If">if</FONT>(error.isAuthFailed())
+<A NAME="119"></A>            {
+<A NAME="120"></A>                System.out.println( <FONT ID="StringLiteral">"Authentication failed"</FONT>);
+<A NAME="121"></A>            }
+<A NAME="122"></A>            <FONT ID="Else">else</FONT> <FONT ID="If">if</FONT>(error.getErrorStatus() != <FONT ID="IntegerLiteral">0</FONT>)
+<A NAME="123"></A>            {
+<A NAME="124"></A>                System.out.println(SnmpPdu.getErrorStatusString(error.getErrorStatus()));
+<A NAME="125"></A>            }
+<A NAME="126"></A>            <FONT ID="Else">else</FONT>
+<A NAME="127"></A>            {
+<A NAME="128"></A>                print(varbinds);
+<A NAME="129"></A>            }
+<A NAME="130"></A>            session.close();
+<A NAME="131"></A>        }
+<A NAME="132"></A>        <FONT ID="Catch">catch</FONT>(Exception e)
+<A NAME="133"></A>        {
+<A NAME="134"></A>            System.out.println(e);
+<A NAME="135"></A>            e.printStackTrace();
+<A NAME="136"></A>        }
+<A NAME="137"></A>    }
+<A NAME="138"></A>    
+<A NAME="139"></A>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="140"></A></FONT>    <FONT ID="SingleLineComment">// Parsing command line options
+<A NAME="141"></A></FONT>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="142"></A></FONT>    
+<A NAME="143"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printExample(String programName)
+<A NAME="144"></A>    {
+<A NAME="145"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost .1.3.6.1.2.1.2.2.1"</FONT>);
+<A NAME="146"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost iftable"</FONT>);
+<A NAME="147"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost ifTable"</FONT>);
+<A NAME="148"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost system"</FONT>);
+<A NAME="149"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" -o localhost ipRouteTable"</FONT>);
+<A NAME="150"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost mib-2"</FONT>);
+<A NAME="151"></A>    }
+<A NAME="152"></A>
+<A NAME="153"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> moreOptions()
+<A NAME="154"></A>    {
+<A NAME="155"></A>        System.out.println( <FONT ID="StringLiteral">"-w {1|2} which get method to use, default is 1"</FONT>);
+<A NAME="156"></A>    }
+<A NAME="157"></A>    
+<A NAME="158"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> parseOptions(String[] args, String program)
+<A NAME="159"></A>    {
+<A NAME="160"></A>        <FONT ID="Super">super</FONT>.parseOptions(args, program);
+<A NAME="161"></A>        _method = Integer.parseInt(_parseArgs.getOptionValue(<FONT ID="CharacerLiteral">'w'</FONT>, <FONT ID="StringLiteral">"1"</FONT>));
+<A NAME="162"></A>    }
+<A NAME="163"></A>
+<A NAME="164"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printMoreOptions()
+<A NAME="165"></A>    {
+<A NAME="166"></A>        System.out.println( <FONT ID="StringLiteral">"getSubtree =\t\t"</FONT> + _method);
+<A NAME="167"></A>    }
+<A NAME="168"></A>
+<A NAME="169"></A>    <FONT ID="FormalComment">/**
+<A NAME="170"></A>     * Creates a new instance of ParseArguments
+<A NAME="171"></A>     */</FONT>
+<A NAME="172"></A>    <FONT ID="Protected">protected</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A> newParseArgumentsInstance(String[] args)
+<A NAME="173"></A>    {
+<A NAME="174"></A>        <FONT ID="Return">return</FONT> <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/util/ParseArguments.html">ParseArguments</A>(args, <FONT ID="StringLiteral">"?ho"</FONT>, <FONT ID="StringLiteral">"utvaAXxcpmnrwk"</FONT>);
+<A NAME="175"></A>    }
+<A NAME="176"></A>    
+<A NAME="177"></A>}<FONT ID="SingleLineComment">// end of class snmpgetsubtree 
+<A NAME="178"></A></FONT></pre>
+</BODY>
+</HTML>

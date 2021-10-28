@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<HTML>
+<HEAD>
+<LINK REL=STYLESHEET TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
+<META NAME="GENERATOR" CONTENT="Java2HTML Version 1.0.9">
+<TITLE>snmpgettable (Java2HTML)</TITLE>
+</HEAD>
+<body bgcolor=white><br>// <a href=http://www.ireasoning.com/>Home</a> | <a href=javascript:history.go(-1)>Go Back</a> // <br><hr><pre ID="Classes">
+<A NAME="1"></A><FONT ID="MultiLineComment">/*
+<A NAME="2"></A> * Copyright (c) 2002 iReasoning Networks. All Rights Reserved.
+<A NAME="3"></A> * 
+<A NAME="4"></A> * This SOURCE CODE FILE, which has been provided by iReasoning Networks as part
+<A NAME="5"></A> * of an iReasoning Software product for use ONLY by licensed users of the product,
+<A NAME="6"></A> * includes CONFIDENTIAL and PROPRIETARY information of iReasoning Networks.  
+<A NAME="7"></A> *
+<A NAME="8"></A> * USE OF THIS SOFTWARE IS GOVERNED BY THE TERMS AND CONDITIONS 
+<A NAME="9"></A> * OF THE LICENSE STATEMENT AND LIMITED WARRANTY FURNISHED WITH
+<A NAME="10"></A> * THE PRODUCT.
+<A NAME="11"></A> *
+<A NAME="12"></A> * IN PARTICULAR, YOU WILL INDEMNIFY AND HOLD IREASONING SOFTWARE, ITS
+<A NAME="13"></A> * RELATED COMPANIES AND ITS SUPPLIERS, HARMLESS FROM AND AGAINST ANY
+<A NAME="14"></A> * CLAIMS OR LIABILITIES ARISING OUT OF THE USE, REPRODUCTION, OR
+<A NAME="15"></A> * DISTRIBUTION OF YOUR PROGRAMS, INCLUDING ANY CLAIMS OR LIABILITIES
+<A NAME="16"></A> * ARISING OUT OF OR RESULTING FROM THE USE, MODIFICATION, OR
+<A NAME="17"></A> * DISTRIBUTION OF PROGRAMS OR FILES CREATED FROM, BASED ON, AND/OR
+<A NAME="18"></A> * DERIVED FROM THIS SOURCE CODE FILE.
+<A NAME="19"></A> */</FONT>
+<A NAME="20"></A>
+<A NAME="21"></A>
+<A NAME="22"></A><FONT ID="Import">import</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/package-summary.html">com.ireasoning.protocol.snmp.*</A>;
+<A NAME="23"></A><FONT ID="Import">import</FONT> javax.swing.*;
+<A NAME="24"></A><FONT ID="Import">import</FONT> javax.swing.table.*;
+<A NAME="25"></A>
+<A NAME="26"></A><FONT ID="FormalComment">/**
+<A NAME="27"></A> * This class demonstrates retrieving SNMP table and polling table periodically. 
+<A NAME="28"></A> * &lt;pre&gt;
+<A NAME="29"></A> * Example:
+<A NAME="30"></A> * java snmpgettable localhost tcpConnTable
+<A NAME="31"></A> * java snmpgettable localhost iftable
+<A NAME="32"></A> * java snmpgettable localhost ifTable
+<A NAME="33"></A> * java snmpgettable -o localhost ipRouteTable
+<A NAME="34"></A> * &lt;/pre&gt;
+<A NAME="35"></A> *
+<A NAME="36"></A> * Example Result: <p>
+java snmpgettable localhost tcpConnTable<br>
+<img src="../../gettable.gif"><p>
+<A NAME="37"></A> */</FONT>
+<A NAME="38"></A><FONT ID="Public">public</FONT> <FONT ID="Class">class</FONT> snmpgettable  <FONT ID="Extends">extends</FONT> <A HREF="snmp.java.html">snmp</A> 
+<A NAME="39"></A>{
+<A NAME="40"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> main(String[] args)
+<A NAME="41"></A>    {
+<A NAME="42"></A>        <A HREF="snmpgettable.java.html">snmpgettable</A> s = <FONT ID="New">new</FONT> <A HREF="snmpgettable.java.html">snmpgettable</A>();
+<A NAME="43"></A>        s.parseOptions(args, <FONT ID="StringLiteral">"snmpgettable"</FONT>);
+<A NAME="44"></A>
+<A NAME="45"></A>        s.getTable();
+<A NAME="46"></A>    }
+<A NAME="47"></A>    
+<A NAME="48"></A>    <FONT ID="Private">private</FONT> <FONT ID="Void">void</FONT> getTable()
+<A NAME="49"></A>    {
+<A NAME="50"></A>        <FONT ID="Try">try</FONT>
+<A NAME="51"></A>        {
+<A NAME="52"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A> session = <FONT ID="New">new</FONT> <A HREF="../..//com/ireasoning/protocol/snmp/SnmpSession.html">SnmpSession</A>(_host, _port, _community,
+<A NAME="53"></A>                    _community, _version, _transportLayer);
+<A NAME="54"></A>            <FONT ID="If">if</FONT>(_isSnmpV3)
+<A NAME="55"></A>            {
+<A NAME="56"></A>                session.setV3Params(_user, _authProtocol, _authPassword, _privProtocol, _privPassword, _context, <FONT ID="Null">null</FONT>);
+<A NAME="57"></A>            }
+<A NAME="58"></A>            <FONT ID="SingleLineComment">//Loading necessary mibs already handled in super class (snmp.java)
+<A NAME="59"></A></FONT>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpTableModel.html">SnmpTableModel</A> table = session.snmpGetTable(_oids[<FONT ID="IntegerLiteral">0</FONT>]);<FONT ID="SingleLineComment">// _oids[0] is the table name like "tcpConnTable"
+<A NAME="60"></A></FONT>
+<A NAME="61"></A>            <FONT ID="If">if</FONT>(table == <FONT ID="Null">null</FONT>)
+<A NAME="62"></A>            {
+<A NAME="63"></A>                System.err.println( <FONT ID="StringLiteral">"Table not found in loaded MIBs"</FONT>);
+<A NAME="64"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="65"></A>            }
+<A NAME="66"></A>            <A HREF="../..//com/ireasoning/protocol/snmp/SnmpOID.html">SnmpOID</A> authFailureOID = table.getAuthFailureOID();
+<A NAME="67"></A>            <FONT ID="If">if</FONT>(authFailureOID != <FONT ID="Null">null</FONT>)
+<A NAME="68"></A>            {
+<A NAME="69"></A>                System.out.println( <FONT ID="StringLiteral">"Authentication failed. Reason:"</FONT>);
+<A NAME="70"></A>                snmp.printAuthFailReason(authFailureOID);
+<A NAME="71"></A>                <FONT ID="Return">return</FONT>;
+<A NAME="72"></A>            }
+<A NAME="73"></A>            <FONT ID="SingleLineComment">//print to standard out
+<A NAME="74"></A></FONT>            <FONT ID="For">for</FONT> (<FONT ID="Int">int</FONT> i = <FONT ID="IntegerLiteral">0</FONT>; i &lt; table.getRowCount() ; i++) 
+<A NAME="75"></A>            {
+<A NAME="76"></A>                print(table.getRow(i));
+<A NAME="77"></A>            }
+<A NAME="78"></A>
+<A NAME="79"></A>            <FONT ID="SingleLineComment">// print(session.snmpGetTableColumn("ifSpeed")); //get ifSpeed column
+<A NAME="80"></A></FONT>
+<A NAME="81"></A>            table.setTranslateValue(<FONT ID="True">true</FONT>);<FONT ID="SingleLineComment">// to use values defined in MIB
+<A NAME="82"></A></FONT>            table.startPolling(<FONT ID="IntegerLiteral">30</FONT>);<FONT ID="SingleLineComment">//poll table every 30 seconds
+<A NAME="83"></A></FONT>            <FONT ID="SingleLineComment">//show the result in Swing's JTable
+<A NAME="84"></A></FONT>            showTable(table);
+<A NAME="85"></A>
+<A NAME="86"></A>            <FONT ID="SingleLineComment">// Thread.sleep(45 * 1000);
+<A NAME="87"></A></FONT>            <FONT ID="SingleLineComment">// table.refreshNow();
+<A NAME="88"></A></FONT>            <FONT ID="SingleLineComment">// Thread.sleep(45 * 1000);
+<A NAME="89"></A></FONT>            <FONT ID="SingleLineComment">// System.out.println( "To stop polling");
+<A NAME="90"></A></FONT>            <FONT ID="SingleLineComment">// table.stopPolling();
+<A NAME="91"></A></FONT>            
+<A NAME="92"></A>            <FONT ID="SingleLineComment">// session.close();// !!! Do NOT close session, since it's used by polling thread
+<A NAME="93"></A></FONT>        }
+<A NAME="94"></A>        <FONT ID="Catch">catch</FONT>(Exception e)
+<A NAME="95"></A>        {
+<A NAME="96"></A>            System.out.println(e);
+<A NAME="97"></A>            e.printStackTrace();
+<A NAME="98"></A>        }
+<A NAME="99"></A>    }
+<A NAME="100"></A>    
+<A NAME="101"></A>    <FONT ID="FormalComment">/** Displays table in a JFrame */</FONT>
+<A NAME="102"></A>    <FONT ID="Public">public</FONT> <FONT ID="Static">static</FONT> <FONT ID="Void">void</FONT> showTable(TableModel model)
+<A NAME="103"></A>    {
+<A NAME="104"></A>        JFrame f = <FONT ID="New">new</FONT> JFrame();
+<A NAME="105"></A>        JTable jt = <FONT ID="New">new</FONT> JTable(model);
+<A NAME="106"></A>        jt.setAutoCreateColumnsFromModel(<FONT ID="True">true</FONT>);
+<A NAME="107"></A>        JScrollPane pane = <FONT ID="New">new</FONT> JScrollPane(jt);
+<A NAME="108"></A>        f.getContentPane().add(pane);
+<A NAME="109"></A>        f.setSize(<FONT ID="IntegerLiteral">790</FONT>, <FONT ID="IntegerLiteral">590</FONT>);
+<A NAME="110"></A>        f.setVisible(<FONT ID="True">true</FONT>);
+<A NAME="111"></A>        f.addWindowListener(<FONT ID="New">new</FONT> java.awt.event.WindowAdapter()
+<A NAME="112"></A>        {
+<A NAME="113"></A>          <FONT ID="Public">public</FONT> <FONT ID="Void">void</FONT> windowClosing(java.awt.event.WindowEvent e)
+<A NAME="114"></A>          {
+<A NAME="115"></A>            System.exit(<FONT ID="IntegerLiteral">0</FONT>);
+<A NAME="116"></A>          }
+<A NAME="117"></A>        });
+<A NAME="118"></A>    }
+<A NAME="119"></A>    
+<A NAME="120"></A>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="121"></A></FONT>    <FONT ID="SingleLineComment">// Parsing command line options
+<A NAME="122"></A></FONT>    <FONT ID="SingleLineComment">// ----------------------------------------------------------------------
+<A NAME="123"></A></FONT>    
+<A NAME="124"></A>    <FONT ID="Protected">protected</FONT> <FONT ID="Void">void</FONT> printExample(String programName)
+<A NAME="125"></A>    {
+<A NAME="126"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost tcpConnTable"</FONT>);
+<A NAME="127"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost iftable"</FONT>);
+<A NAME="128"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" localhost ifTable"</FONT>);
+<A NAME="129"></A>        System.out.println( <FONT ID="StringLiteral">"java "</FONT> + programName + <FONT ID="StringLiteral">" -o localhost ipRouteTable"</FONT>);
+<A NAME="130"></A>    }
+<A NAME="131"></A>
+<A NAME="132"></A>}<FONT ID="SingleLineComment">// end of class snmpgettable 
+<A NAME="133"></A></FONT></pre>
+</BODY>
+</HTML>
